@@ -9,6 +9,7 @@ project(bluerov_ros_playground)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+	message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -45,11 +46,10 @@ catkin_python_setup()
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+	FILES
+	Bar30.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -66,10 +66,10 @@ catkin_python_setup()
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -186,11 +186,9 @@ install(FILES
   launch/user_mav.launch
   launch/video.launch
   launch/bluerov2_node.launch
-<<<<<<< HEAD
-	
+
 	launch/controller.launch
-=======
->>>>>>> 45441da6b3d9375bdfe28aecf53dbd76c510578f
+
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
 
@@ -208,11 +206,9 @@ catkin_install_python(PROGRAMS
   src/bridge/bridge.py
   src/bridge/bluerov_node.py
   src/bridge/node
-<<<<<<< HEAD
-  
+
   src/bridge/controller
-=======
->>>>>>> 45441da6b3d9375bdfe28aecf53dbd76c510578f
+
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
