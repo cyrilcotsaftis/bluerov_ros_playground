@@ -256,5 +256,18 @@ if __name__ == '__main__':
     #bridge = Bridge()
     bridge = Bridge(device='udp:localhost:14550')
     while True:
+        
         bridge.update()
-        bridge.print_data()
+#        bridge.print_data()
+
+        if 'SCALED_PRESSURE' not in bridge.get_data():
+            print('NO PRESSURE DATA')
+        else :
+            bar30_data = bridge.get_data()['SCALED_PRESSURE']
+            print("bar30data : ",bar30_data)
+            time_boot_ms = bar30_data['time_boot_ms']
+            press_abs    = bar30_data['press_abs']
+            press_diff   = bar30_data['press_diff']
+            temperature  = bar30_data['temperature']
+            print("\n\n\n")
+            print( "time :",time_boot_ms,"press_abs :", press_abs, "press_diff :",press_diff, "temperature :", temperature)
