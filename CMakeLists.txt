@@ -209,7 +209,7 @@ catkin_install_python(PROGRAMS
   src/bridge/bridge.py
   src/bridge/bluerov_node.py
   src/bridge/node
-
+  src/bridge/subscriber.py
   src/bridge/controller
 
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
