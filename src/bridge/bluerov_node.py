@@ -283,16 +283,22 @@ class BlueRov(Bridge):
         msg.header.frame_id = self.model_base_link
 
     def _create_bar30_msg(self):
-        if 'SCALED_PRESSURE' not in self.get_data():
-            raise Exception('no SCALE_PRESSURE data')
-        bar30_data = self.get_data()['SCALED_PRESSURE']
+        if 'SCALED_PRESSURE2' not in self.get_data():
+            raise Exception('no SCALE_PRESSURE2 data')
+        else :
+            pass
+        bar30_data = self.get_data()['SCALED_PRESSURE2']
         msg = Bar30()
         self._create_header(msg)
-        msg.time_boot_ms = bar30_data[0]
-        msg.press_abs    = bar30_data[1]
-        msg.press_diff   = bar30_data[2]
-        msg.temperature  = bar30_data[3]
+        msg.time_boot_ms = bar30_data['time_boot_ms']
+        msg.press_abs    = bar30_data['press_abs']
+        msg.press_diff   = bar30_data['press_diff']
+        msg.temperature  = bar30_data['temperature']
 
+        #msg.time_boot_ms = 0
+        #msg.press_abs    = 5
+        #msg.press_diff   = 10
+        #msg.temperature  = 15
         self.pub.set_data('/bar30',msg)
         
     def _create_odometry_msg(self):
