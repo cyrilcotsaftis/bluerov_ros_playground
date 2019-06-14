@@ -253,8 +253,8 @@ class Bridge(object):
             )
 
 if __name__ == '__main__':
-    bridge = Bridge()
-    #bridge = Bridge(device='udp:localhost:14550')
+    #bridge = Bridge()
+    bridge = Bridge(device='udp:localhost:14550')
     while True:
         bridge.update()
         bridge.print_data()
