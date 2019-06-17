@@ -32,6 +32,7 @@ from sensor_msgs.msg import Imu
 from std_msgs.msg import Bool
 from std_msgs.msg import String
 from std_msgs.msg import UInt16
+from bluerov_ros_playground.msg import Bar30
 
 class BlueRov(Bridge):
     def __init__(self, device='udp:192.168.2.1:14550', baudrate=115200):
@@ -81,6 +82,12 @@ class BlueRov(Bridge):
                 Odometry,
                 1
             ],
+            [
+                self._create_bar30_msg,
+                '/bar30',
+                Bar30,
+                1
+            ]
         ]
 
         self.sub_topics= [
@@ -275,6 +282,25 @@ class BlueRov(Bridge):
         msg.header.stamp = rospy.Time.now()
         msg.header.frame_id = self.model_base_link
 
+    def _create_bar30_msg(self):
+        if 'SCALED_PRESSURE2' not in self.get_data():
+            raise Exception('no SCALE_PRESSURE2 data')
+        else :
+            pass
+        bar30_data = self.get_data()['SCALED_PRESSURE2']
+        msg = Bar30()
+        self._create_header(msg)
+        msg.time_boot_ms = bar30_data['time_boot_ms']
+        msg.press_abs    = bar30_data['press_abs']
+        msg.press_diff   = bar30_data['press_diff']
+        msg.temperature  = bar30_data['temperature']
+
+        #msg.time_boot_ms = 0
+        #msg.press_abs    = 5
+        #msg.press_diff   = 10
+        #msg.temperature  = 15
+        self.pub.set_data('/bar30',msg)
+        
     def _create_odometry_msg(self):
         """ Create odometry message from ROV information
 

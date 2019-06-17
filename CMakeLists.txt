@@ -10,7 +10,8 @@ project(bluerov_ros_playground)
 find_package(catkin REQUIRED COMPONENTS
 	std_msgs
   rospy
-	message_generation
+  message_generation
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -104,7 +105,9 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES bluerov_ros_playground
-#  CATKIN_DEPENDS rospy
+  CATKIN_DEPENDS rospy
+  CATKIN_DEPENDS message_runtime
+#  DEPENDS system_lib
 #  DEPENDS system_lib
 )
 
@@ -207,7 +210,7 @@ catkin_install_python(PROGRAMS
   src/bridge/bridge.py
   src/bridge/bluerov_node.py
   src/bridge/node
-
+  src/bridge/subscriber.py
   src/bridge/controller
 
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
