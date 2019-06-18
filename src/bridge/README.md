@@ -22,7 +22,7 @@ The folowing topics are available:
  - **/BlueRov2/imu/data** - `sensor_msgs/Imu`
  - **/BlueRov2/mode/set** - `std_msgs/String`
  - **/BlueRov2/odometry** - `nav_msgs/Odometry`
- - **/BlueRov2/bar30** - bluerov_ros_playground/Bar30
+ - **/BlueRov2/bar30** - `bluerov_ros_playground/Bar30`
  - **/BlueRov2/rc_channel1/set_pwm** - `std_msgs/UInt16`
  - **/BlueRov2/rc_channel2/set_pwm** - `std_msgs/UInt16`
  - **/BlueRov2/rc_channel3/set_pwm** - `std_msgs/UInt16`
