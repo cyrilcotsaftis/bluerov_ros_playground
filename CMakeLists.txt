@@ -51,6 +51,7 @@ catkin_python_setup()
 add_message_files(
 	FILES
 	Bar30.msg
+	Attitude.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -190,8 +191,7 @@ install(FILES
   launch/user_mav.launch
   launch/video.launch
   launch/bluerov2_node.launch
-
-	launch/controller.launch
+  launch/controller.launch
 
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
@@ -211,7 +211,7 @@ catkin_install_python(PROGRAMS
   src/bridge/bluerov_node.py
   src/bridge/node
   src/bridge/subscriber.py
-  src/bridge/controller
+  src/bridge/depth_controller
 
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
