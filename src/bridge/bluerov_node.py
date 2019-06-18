@@ -295,10 +295,6 @@ class BlueRov(Bridge):
         msg.press_diff   = bar30_data['press_diff']
         msg.temperature  = bar30_data['temperature']
 
-        #msg.time_boot_ms = 0
-        #msg.press_abs    = 5
-        #msg.press_diff   = 10
-        #msg.temperature  = 15
         self.pub.set_data('/bar30',msg)
         
     def _create_odometry_msg(self):
