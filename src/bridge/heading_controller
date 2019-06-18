@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+import rospy
+from math import pi
+from std_msgs.msg import String
+from std_msgs.msg import UInt16
+from std_msgs.msg import Bool
+from sensor_msgs.msg import Imu
+from bluerov_ros_playground.msg import Attitude
+
+#axis z goes up
+
+
+ATTITUDE = [0]*6
+heading = 0 
+
+def sawtooth(x):
+    return (x+math.pi)%(2*math.pi)-math.pi
+
+
+def callback_att(msg):
+	global ATTITUDE
+	ATTITUDE = [msg.roll,
+		    msg.pitch,
+		    msg.yaw,
+		    msg.rollspeed,
+		    msg.pitchspeed,
+		    msg.yawspeed]
+
+
+def control(yaw, yawspeed):
+	return sawtooth(yaw-heading) + yawspeed
+	
+def saturation(pwm, pwm_max):
+	pwm_min = 1500 - (pwm_max-1500)
+	if pwm > pwm_max :
+		pwm = pwm_max
+	if pwm < pwm_min:
+		pwm = pwm_min
+	return int(pwm)
+
+
+rospy.init_node('heading_controller', anonymous=True)
+pub_rc4 = rospy.Publisher('/BlueRov2/rc_channel4/set_pwm', UInt16, queue_size=10)
+pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
+rate = rospy.Rate(4)
+
+while not rospy.is_shutdown():
+	pub_arm.publish(1)
+	rospy.Subscriber('/BlueRov2/attitude', Attitude, callback_att)
+        yaw = ATTITUDE[2]
+	yawspeed = ATTITUDE[5]
+	u = control(yaw, yawspeed)
+	pwm = 1500+u
+        pwm = saturation(pwm, 1650)
+	pub_rc4.publish(pwm)
+	rate.sleep()
+
+
+
