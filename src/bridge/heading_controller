@@ -8,14 +8,12 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
 from bluerov_ros_playground.msg import Attitude
 
-#axis z goes up
-
 
 ATTITUDE = [0]*6
 heading = 0 
 
 def sawtooth(x):
-    return (x+math.pi)%(2*math.pi)-math.pi
+	return (x+math.pi)%(2*math.pi)-math.pi
 
 
 def callback_att(msg):
