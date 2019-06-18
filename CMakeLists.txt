@@ -212,6 +212,7 @@ catkin_install_python(PROGRAMS
   src/bridge/node
   src/bridge/subscriber.py
   src/bridge/depth_controller
+  src/bridge/heading_controller
 
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
