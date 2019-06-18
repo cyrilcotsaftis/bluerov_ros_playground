@@ -20,6 +20,7 @@ The folowing topics are available:
  - **/BlueRov2/battery** - `sensor_msgs/BatteryState`
  - **/BlueRov2/camera/image_raw** - `sensor_msgs/Image`
  - **/BlueRov2/imu/data** - `sensor_msgs/Imu`
+ - **/BlueRov2/imu/attitude** - `bluerov_ros_playground/Attitude`
  - **/BlueRov2/mode/set** - `std_msgs/String`
  - **/BlueRov2/odometry** - `nav_msgs/Odometry`
  - **/BlueRov2/bar30** - `bluerov_ros_playground/Bar30`
