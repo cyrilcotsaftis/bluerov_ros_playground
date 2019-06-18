@@ -33,6 +33,7 @@ from std_msgs.msg import Bool
 from std_msgs.msg import String
 from std_msgs.msg import UInt16
 from bluerov_ros_playground.msg import Bar30
+from bluerov_ros_playground.msg import Attitude 
 
 class BlueRov(Bridge):
     def __init__(self, device='udp:192.168.2.1:14550', baudrate=115200):
@@ -87,7 +88,14 @@ class BlueRov(Bridge):
                 '/bar30',
                 Bar30,
                 1
+            ],
+            [
+                self._create_imu_euler_msg,
+                '/imu/attitude',
+                Attitude,
+                1
             ]
+
         ]
 
         self.sub_topics= [
@@ -296,6 +304,30 @@ class BlueRov(Bridge):
         msg.temperature  = bar30_data['temperature']
 
         self.pub.set_data('/bar30',msg)
+    
+    def _create_imu_euler_msg(self):
+        if 'ATTITUDE' not in self.get_data():
+            raise Exception('no ATTITUDE data')
+        else :
+            pass
+        #http://mavlink.org/messages/common#ATTITUDE
+        attitude_data = self.get_data()['ATTITUDE']
+        orientation = [attitude_data[i] for i in ['roll', 'pitch', 'yaw']]
+        orientation_speed = [attitude_data[i] for i in ['rollspeed', 'pitchspeed', 'yawspeed']]
+        
+        msg = Attitude()
+        self._create_header(msg)
+        msg.time_boot_ms = attitude_data['time_boot_ms']
+        msg.roll = orientation[0]
+        msg.pitch = orientation[1]
+        msg.yaw = orientation[2]
+        msg.rollspeed = orientation_speed[0]
+        msg.pitchspeed = orientation_speed[1]
+        msg.yawspeed = orientation_speed[2]
+
+        self.pub.set_data('/imu/attitude',msg)
+
+        
         
     def _create_odometry_msg(self):
         """ Create odometry message from ROV information
