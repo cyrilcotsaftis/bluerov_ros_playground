@@ -7,6 +7,8 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
 from bluerov_ros_playground.msg import Bar30
 
+#axis z goes up
+
 p0 = 990*100
 g = 9.81
 rho = 1000
@@ -25,16 +27,15 @@ def callback_bar30(msg):
         	 msg.press_abs,
         	 msg.press_diff,
         	 msg.temperature ]
-        print(q_in) 
+        return q_in 
 
-def control():
-	p = q_in[1]
-	z = (-p+p0)/rho*g
+def control(p):
+	z = -(p-p0)/(rho*g)
 	u = K*(zd-z)
 	return u
 	
 def saturation(pwm, pwm_max):
-	pwm_min = pwm_max-1500
+	pwm_min = 1500 - (pwm_max-1500)
 	if pwm > pwm_max :
 		pwm = pwm_max
 	if pwm < pwm_min:
@@ -50,8 +51,9 @@ rate = rospy.Rate(4)
 
 while not rospy.is_shutdown():
 	pub_arm.publish(1)
-	rospy.Subscriber('/BlueRov2/bar30', Bar30, callback_bar30)
-	u = control()
+	q_in = rospy.Subscriber('/BlueRov2/bar30', Bar30, callback_bar30)
+	p = q_in[1]*100
+	u = control(p)
 	pwm = 1500+u
 	pwm = saturation(pwm, 1550)
 	pub_rc3.publish(pwm)
