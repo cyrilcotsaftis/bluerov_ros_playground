@@ -14,6 +14,7 @@ g = 9.81
 rho = 1000
 zd = -0.5
 K = 10
+q_in = []
 
 def callback_imu(msg):
 	q_in = [ msg.orientation.x,
@@ -23,12 +24,12 @@ def callback_imu(msg):
 	print(q_in)
 
 def callback_bar30(msg):
+	global q_in
 	q_in = [ msg.time_boot_ms,
         	 msg.press_abs,
         	 msg.press_diff,
         	 msg.temperature ]
-        return q_in 
-
+       	print q_in
 def control(p):
 	z = -(p-p0)/(rho*g)
 	u = K*(zd-z)
@@ -51,7 +52,7 @@ rate = rospy.Rate(4)
 
 while not rospy.is_shutdown():
 	pub_arm.publish(1)
-	q_in = rospy.Subscriber('/BlueRov2/bar30', Bar30, callback_bar30)
+	rospy.Subscriber('/BlueRov2/bar30', Bar30, callback_bar30)
 	p = q_in[1]*100
 	u = control(p)
 	pwm = 1500+u
