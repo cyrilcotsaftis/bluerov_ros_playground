@@ -9,12 +9,13 @@ from bluerov_ros_playground.msg import Bar30
 
 #axis z goes up
 
-p0 = 990*100
+#p0 = 990*100
 g = 9.81
+p0 = 990*100
 rho = 1000
-zd = -0.5
-K = 10
-q_in = []
+zd = -0.20
+K = 500
+q_in = [0]*4
 
 def callback_imu(msg):
 	q_in = [ msg.orientation.x,
@@ -29,11 +30,13 @@ def callback_bar30(msg):
         	 msg.press_abs,
         	 msg.press_diff,
         	 msg.temperature ]
-       	print q_in
+       	#print q_in
 
 def control(p):
 	z = -(p-p0)/(rho*g)
+        print(z)
 	u = K*(zd-z)
+        logs_depthControl.write(" z :{} \n".format( z ))
 	return u
 	
 def saturation(pwm, pwm_max):
@@ -50,14 +53,17 @@ rospy.init_node('controller', anonymous=True)
 pub_rc3 = rospy.Publisher('/BlueRov2/rc_channel3/set_pwm', UInt16, queue_size=10)
 pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
 rate = rospy.Rate(4)
-
+logs_depthControl = open("logs_depthControl.txt", 'a')
 while not rospy.is_shutdown():
 	pub_arm.publish(1)
 	rospy.Subscriber('/BlueRov2/bar30', Bar30, callback_bar30)
-	p = q_in[1]*100
+        logs_depthControl.write("q_in :{} \n".format(q_in[1]))
+        p = q_in[1]*100
 	u = control(p)
 	pwm = 1500+u
-	pwm = saturation(pwm, 1550)
+        logs_depthControl.write("pwm  :{} \n".format(pwm))
+        print(q_in[1],pwm) 
+        pwm = saturation(pwm, 1650)
 	pub_rc3.publish(pwm)
 	rate.sleep()
 
