@@ -30,6 +30,7 @@ def callback_bar30(msg):
         	 msg.press_diff,
         	 msg.temperature ]
        	print q_in
+
 def control(p):
 	z = -(p-p0)/(rho*g)
 	u = K*(zd-z)
