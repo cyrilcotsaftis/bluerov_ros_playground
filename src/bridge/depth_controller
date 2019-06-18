@@ -60,7 +60,7 @@ while not rospy.is_shutdown():
 	pwm = 1500+u
         logs_depthControl.write("pwm  :{} \n".format(pwm))
         print(mesured_pressure[1],pwm) 
-        pwm = saturation(pwm, 1650)
+        pwm = saturation(pwm, 1550)
 	pub_rc3.publish(pwm)
 	rate.sleep()
 
