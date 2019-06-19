@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- start control node -->
+	<node pkg="bluerov_ros_playground" type="depth_controller" name="depth_controller" output="screen"/>
+	<node pkg="bluerov_ros_playground" type="heading_controller" name="heading_controller" output="screen"/>
+	<node pkg="bluerov_ros_playground" type="commander" name="commander" output="screen"/>
+</launch>
+
