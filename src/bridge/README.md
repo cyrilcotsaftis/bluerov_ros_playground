@@ -56,10 +56,8 @@ $ rostopic pub -1 /BlueRov2/arm std_msgs/Bool 1
 $ rostopic pub -r 4 /BlueRov2/setpoint_velocity/cmd_vel geometry_msgs/TwistStamped "{header: auto, twist: {linear: {x: 10.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}}"
 # Set MAIN OUT pwm value
 $ rostopic pub -r 4 /BlueRov2/servo1/set_pwm std_msgs/UInt16  1500
-<<<<<<< HEAD
+# Set THROTTLE pwm value  
 $ rostopic pub -r 4 /BlueRov2/rc_channel3/set_pwm std_msgs/UInt16  1900
-=======
->>>>>>> 45441da6b3d9375bdfe28aecf53dbd76c510578f
 # Visualize camera image
 $ rosrun image_view image_view image:=/BlueRov2/camera/image_raw
 # See ROV state
@@ -67,9 +65,5 @@ $ rostopic echo /BlueRov2/state
 # Watch battery information
 $ rostopic echo /BlueRov2/battery
 # IMU information
-<<<<<<< HEAD
 $ rostopic echo /BlueRov2/imu/data
-=======
-$ rostopic echo /BlueRov3/imu/data
->>>>>>> 45441da6b3d9375bdfe28aecf53dbd76c510578f
 ```
