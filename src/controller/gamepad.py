@@ -4,18 +4,20 @@ from __future__ import print_function
 import rospy
 from inputs import get_gamepad
 from sensor_msgs.msg import Joy
+from std_msgs.msg import Bool
 
 class Gamepad():
-    def __init__(self, pwmmax=1550, pwmneutral=1500,rosrate = 10):
+    def __init__(self, pwm_max=1550, pwm_neutral=1500, rosrate=4):
         self.pub = rospy.Publisher('/Command/joy', Joy, queue_size=10)
+        self.sub = rospy.Subscriber('/BlueRov2/arm', Bool, self._arm_callback) 
         self.rate = rospy.Rate(rosrate)
         self.model_base_link = '/base_link'
 
-        self.pwm_max = pwmmax
-        self.pwm_neutral = pwmneutral
+        self.pwm_max = pwm_max
+        self.pwm_neutral = pwm_neutral
         self.override_controller = 0 # 1 to override all pwm sended by controllers
-        self.armed = 0 # 0 if BlueRov2 disarmed, 1 if armed TODO: subscribe to the channel armed
-
+        self.armed = False # False if BlueRov2 disarmed, True if armed 
+        
         #sensor_msgs/Joy :
         #  std_msgs/Header header
         #    uint32 seq
@@ -51,11 +53,10 @@ class Gamepad():
             'BTN_BASE4': self._arm, # START [0;1]
             }
 
-    def update(self):
-        #TODO: goal to subscribe to the order topic to set pwm_max and to get the arm state of blue rov
-        pass
+    def _arm_callback(self, msg):
+        self.armed = msg.data
+        print('ARRMM ', self.armed)    
 
-    
     def msg_header(self):
         self.msg.header.stamp = rospy.Time.now()
         self.msg.header.frame_id = self.model_base_link
@@ -64,14 +65,14 @@ class Gamepad():
         print('{} not BIND, state : {}'.format(key, state))
 
     def _arm(self, key, state):
-        if self.armed == 0:
-            self.armed = 1
+        if not self.armed :
+            self.armed = True
         self.msg.buttons[0] = self.armed
         print("ARM, key : {}, state : {}, arm : {}".format(key, state, self.armed))
 
     def _disarm(self, key, state):
-        if self.armed == 1:
-            self.armed = 0
+        if self.armed:
+            self.armed = False 
         self.msg.buttons[0] = self.armed
         print("DISARM, key : {}, state : {}, arm : {}".format(key, state, self.armed))
 
@@ -111,7 +112,6 @@ class Gamepad():
 	return int(pwm)
 
     def publish(self):
-        self.update()
         events = get_gamepad()
         for event in events:
             #print(event.ev_type, event.code, event.state)
