@@ -214,7 +214,7 @@ catkin_install_python(PROGRAMS
   src/bridge/depth_controller
   src/bridge/heading_controller
   src/bridge/commander
-
+  src/bridge/gamepad.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
