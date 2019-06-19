@@ -191,7 +191,7 @@ install(FILES
   launch/user_mav.launch
   launch/video.launch
   launch/bluerov2_node.launch
-  launch/controller.launch
+  launch/control.launch
 
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
@@ -213,6 +213,7 @@ catkin_install_python(PROGRAMS
   src/bridge/subscriber.py
   src/bridge/depth_controller
   src/bridge/heading_controller
+  src/bridge/commander
 
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

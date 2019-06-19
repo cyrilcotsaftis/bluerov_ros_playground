@@ -14,9 +14,16 @@ heading = 2.88
 PI = np.pi
 KP = 100
 KD = 10
+
+rospy.init_node('heading_controller', anonymous=True)
+#pub_rc4 = rospy.Publisher('/BlueRov2/rc_channel4/set_pwm', UInt16, queue_size=10)
+#pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
+pub_pwm = rospy.Publisher('/Command/heading', UInt16, queue_size=10)
+rate = rospy.Rate(4)
+
+
 def sawtooth(x):
 	return (x+PI)%(2*PI)-PI
-
 
 def callback_att(msg):
 	global ATTITUDE
@@ -26,7 +33,6 @@ def callback_att(msg):
 		    msg.rollspeed,
 		    msg.pitchspeed,
 		    msg.yawspeed]
-
 
 def control(yaw, yawspeed):
 	return KP*sawtooth(yaw-heading) + KD*yawspeed
@@ -40,13 +46,9 @@ def saturation(pwm, pwm_max):
 	return int(pwm)
 
 
-rospy.init_node('heading_controller', anonymous=True)
-pub_rc4 = rospy.Publisher('/BlueRov2/rc_channel4/set_pwm', UInt16, queue_size=10)
-pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
-rate = rospy.Rate(4)
 
 while not rospy.is_shutdown():
-	pub_arm.publish(1)
+	#pub_arm.publish(1)
 	rospy.Subscriber('/BlueRov2/imu/attitude', Attitude, callback_att)
         yaw = ATTITUDE[2]
 	yawspeed = ATTITUDE[5]
@@ -55,7 +57,8 @@ while not rospy.is_shutdown():
         pwm = saturation(pwm, 1550)
 
         print(u,pwm,yaw)
-	pub_rc4.publish(pwm)
+	#pub_rc4.publish(pwm)
+	pub_pwm.publish(pwm)
 	rate.sleep()
 
 

@@ -4,7 +4,6 @@ import rospy
 from std_msgs.msg import String
 from std_msgs.msg import UInt16
 from std_msgs.msg import Bool
-from sensor_msgs.msg import Imu
 from bluerov_ros_playground.msg import Bar30
 
 #axis z goes up
@@ -17,17 +16,12 @@ DEPTH_DESIRED = -0.20
 mesured_pressure = [0]*4
 
 rospy.init_node('depth_controller', anonymous=True)
-pub_rc3 = rospy.Publisher('/BlueRov2/rc_channel3/set_pwm', UInt16, queue_size=10)
-pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
+#pub_rc3 = rospy.Publisher('/BlueRov2/rc_channel3/set_pwm', UInt16, queue_size=10)
+pub_pwm = rospy.Publisher('/Command/depth', UInt16, queue_size=10)
+#pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
 rate = rospy.Rate(4)
 logs_depthControl = open("logs_depthControl.txt", 'a')
 
-def callback_imu(msg):
-	imu_data= [ msg.orientation.x,
-                 msg.orientation.y,
-                 msg.orientation.z,
-	         msg.orientation.w ]
-	print(imu_data)
 
 def callback_bar30(msg):
 	global mesured_pressure
@@ -38,7 +32,7 @@ def callback_bar30(msg):
 
 def control(p):
 	depth  = -(p-p0)/(rho*g)
-        print("Real Depth :",depth  )
+        #print("Real Depth :",depth  )
 	u = K*(DEPTH_DESIRED-depth)
         logs_depthControl.write("depth : \n".format( depth ))
 	return u
@@ -52,16 +46,17 @@ def saturation(pwm, pwm_max):
 	return int(pwm)
 
 while not rospy.is_shutdown():
-	pub_arm.publish(1)
+	#pub_arm.publish(1)
 	rospy.Subscriber('/BlueRov2/bar30', Bar30, callback_bar30)
         logs_depthControl.write("mesured_pressure :{} \n".format(mesured_pressure[1]))
         p = mesured_pressure[1]*100
 	u = control(p)
 	pwm = 1500+u
         logs_depthControl.write("pwm  :{} \n".format(pwm))
-        print(mesured_pressure[1],pwm) 
+        #print(mesured_pressure[1],pwm) 
         pwm = saturation(pwm, 1550)
-	pub_rc3.publish(pwm)
+	#pub_rc3.publish(pwm)
+	pub_pwm.publish(pwm)
 	rate.sleep()
 
 
