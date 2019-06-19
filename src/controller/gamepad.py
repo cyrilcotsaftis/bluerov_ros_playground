@@ -51,7 +51,7 @@ class Gamepad():
             'BTN_BASE4': self._arm, # START [0;1]
             }
 
-    def update():
+    def update(self):
         #TODO: goal to subscribe to the order topic to set pwm_max and to get the arm state of blue rov
         pass
 
@@ -106,11 +106,12 @@ class Gamepad():
         print("FORWARD, key : {}, state : {}, pwm : {}".format(key, state, self.msg.axes[2]))
 
     def pwm_set_neutral(self,pwm):
-        if pwm >= 1495 and pwm <= 1505:
+        if pwm >= 1495 and pwm <= 1505: #to ensure that when stick are in the center neutral pwm i send
             pwm = self.pwm_neutral
 	return int(pwm)
 
     def publish(self):
+        self.update()
         events = get_gamepad()
         for event in events:
             #print(event.ev_type, event.code, event.state)
@@ -118,12 +119,12 @@ class Gamepad():
                 self.input[event.code](event.code,event.state) #launch the method that correspond to the input 
         self.msg_header()
         self.pub.publish(self.msg)
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     rospy.init_node('Gamepad', anonymous=True)
+
     gamepad = Gamepad()
 
     while not rospy.is_shutdown():
         gamepad.publish()
-        #gamepad.rate.sleep()
 
