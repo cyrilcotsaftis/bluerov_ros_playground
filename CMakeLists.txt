@@ -210,11 +210,11 @@ catkin_install_python(PROGRAMS
   src/bridge/bridge.py
   src/bridge/bluerov_node.py
   src/bridge/node
-  src/bridge/subscriber.py
-  src/bridge/depth_controller
-  src/bridge/heading_controller
-  src/bridge/commander
-  src/bridge/gamepad.py
+  src/controller/subscriber.py
+  src/controller/depth_controller
+  src/controller/heading_controller
+  src/controller/commander
+  src/controller/gamepad.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
