@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 
 import rospy
-from bluerov_ros_playground.msg import Bar30
+from sensor_msgs.msg import Joy
+
 def callback(data):
     print(data)
 
         
 def listener():
-    rospy.init_node('CMD')
-    rospy.Subscriber("/BlueRov2/bar30", Bar30, callback)
+    rate = rospy.Rate(10)
+
     # spin() simply keeps python from exiting until this node is stopped
-    rospy.spin()
+    while not rospy.is_shutdown():
+        rate.sleep()
 
 if __name__ == "__main__":
+    rospy.init_node('TEST')
+    rospy.Subscriber("/Command/joy", Joy, callback)
     listener()
