@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+import rospy
+from bluerov_ros_playground.msg import Set_depth
+from bluerov_ros_playground.msg import Set_heading
+
+
+def set_msg_depth(depth_desired, pwm_max, pwm_neutral, K, rosrate):
+	msg_depth = Set_depth()
+	msg_depth.depth_desired = depth_desired
+	msg_depth.pwm_max = pwm_max
+	msg_depth.pwm_neutral = pwm_neutral
+	msg_depth.K = K
+	msg_depth.rosrate = rosrate
+	return msg_depth
+
+def set_msg_heading(heading_desired, KP, KD, pwm_max, pwm_neutral, rosrate):
+	msg_heading = Set_heading()
+	msg_heading.heading_desired = heading_desired
+	msg_heading.KP = KP
+	msg_heading.KD = KD
+	msg_heading.pwm_max = pwm_max
+	msg_heading.pwm_neutral = pwm_neutral
+	msg_heading.rosrate = rosrate
+	return msg_heading
+
+
+if __name__ == "__main__":
+	rospy.init_node('Setter', anonymous=True)
+	pub_depth = rospy.Publisher('/Settings/set_depth', Set_depth, queue_size=10)
+	pub_heading = rospy.Publisher('/Settings/set_heading', Set_heading, queue_size=10)
+	rate = rospy.Rate(4)
+	msg_depth = set_msg_depth(-0.2, 1550, 1500, 500, 4)
+	msg_heading = set_msg_heading(0., 10, 5, 1550, 1500, 4)
+
+	while not rospy.is_shutdown():
+		pub_depth.publish(msg_depth)
+		pub_heading.publish(msg_heading)
+		rate.sleep()

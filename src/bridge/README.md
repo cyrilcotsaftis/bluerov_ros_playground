@@ -7,7 +7,9 @@
 Once the BlueRov is connected to your computer, run:
 
 ```bash
-$ roslaunch bluerov_ros_playground bluerov2_node.launch
+$ roslaunch bluerov_ros_playground bluerov2_node.launch bluerov_node_device:=udp:localhost:14550
+
+$ roslaunch bluerov_ros_playground control.launch bluerov_node_device:=udp:localhost:14550
 ```
 You can select the input device with: `bluerov_node_device:=udp:localhost:14550` or `bluerov_node_device:=/dev/ttyACM0` argument.
 The default value is `udp:192.168.2.1:14550`.
@@ -48,6 +50,9 @@ The folowing topics are available:
 # Some commands
 
 ```bash
+# Set depth
+$ rostopic pub -r 4 /Settings/set_depth bluerov_ros_playground/Set_depth "{depth_desired: -0.2, pwm_max: 1550, pwm_neutral: 1500, K: 500, rosrate: 4}"
+
 # Set manual mode
 $ rostopic pub -1 /BlueRov2/mode/set std_msgs/String "manual"
 # Arm the vehicle

@@ -30,10 +30,10 @@ class Commander():
         self.gamepad_buttons = [0,0] # ARM, OVERRIDE_CONTROLLER
 
     def _callback_depth(self,msg):
-	self.pwm_depth = msg.data
+	    self.pwm_depth = msg.data
 
     def _callback_heading(self,msg):
-	self.pwm_heading = msg.data
+	    self.pwm_heading = msg.data
 
     def _callback_joy(self,msg):
         self.gamepad_axes = msg.axes
@@ -42,12 +42,12 @@ class Commander():
         print("AXES : {}, BUTTONS : {}".format(self.gamepad_axes, self.gamepad_buttons))
 
     def publish_controller_command(self):
-	self.pub_arm.publish(self.armed)
-	self.pub_rc3.publish(self.pwm_depth)
-	if abs(self.pwm_heading-self.pwm_neutral)>25:  # Correct the heading
-		self.pub_rc4.publish(self.pwm_heading)
-	else:
-		self.pub_rc5.publish(self.pwm_forward) # Go forward
+	    self.pub_arm.publish(self.armed)
+	    self.pub_rc3.publish(self.pwm_depth)
+	    if abs(self.pwm_heading-self.pwm_neutral)>5:  # Correct the heading
+		    self.pub_rc4.publish(self.pwm_heading)
+	    else:
+		    self.pub_rc5.publish(self.pwm_forward) # Go forward
 
     def publish_gamepad_command(self):
         """gamepad_axes = [THROTTLE, YAW, FORWARD, LATERAL]
