@@ -7,10 +7,11 @@ from sensor_msgs.msg import Joy
 
 class Commander():
     def __init__(self, arm=True, pwm_forward=1550, pwm_neutral=1500, rosrate=4):
-        self.pub_rc3 = rospy.Publisher('/BlueRov2/rc_channel3/set_pwm', UInt16, queue_size=10)
-        self.pub_rc4 = rospy.Publisher('/BlueRov2/rc_channel4/set_pwm', UInt16, queue_size=10)
-        self.pub_rc5 = rospy.Publisher('/BlueRov2/rc_channel5/set_pwm', UInt16, queue_size=10)
-
+        self.pub_rc3 = rospy.Publisher('/BlueRov2/rc_channel3/set_pwm', UInt16, queue_size=10) #THROTTLE
+        self.pub_rc4 = rospy.Publisher('/BlueRov2/rc_channel4/set_pwm', UInt16, queue_size=10) #YAW
+        self.pub_rc5 = rospy.Publisher('/BlueRov2/rc_channel5/set_pwm', UInt16, queue_size=10) #FORWARD
+        self.pub_rc6 = rospy.Publisher('/BlueRov2/rc_channel6/set_pwm', UInt16, queue_size=10) #LATERAL
+        self.pub_rc8 = rospy.Publisher('/BlueRov2/rc_channel8/set_pwm', UInt16, queue_size=10) #CAMERA TILT 
         rospy.Subscriber('/Command/depth', UInt16, self._callback_depth)
         rospy.Subscriber('/Command/heading', UInt16, self._callback_heading)
         rospy.Subscriber('/Command/joy', Joy, self._callback_joy)
@@ -54,11 +55,17 @@ class Commander():
 
 
     def publish_gamepad_command(self):
+        """gamepad_axes = [THROTTLE, YAW, FORWARD, LATERAL]
+           gamepad_buttons = [ARM, OVERRIDE_CONTROLLER, PWM_CAMERA, GAIN_LIGHT]
+        """
         self.pub_arm.publish(self.gamepad_buttons[0])
+        self.pub_rc8.publish(self.gamepad_buttons[2])
+        
         self.pub_rc3.publish(self.gamepad_axes[0])
         self.pub_rc4.publish(self.gamepad_axes[1])
         self.pub_rc5.publish(self.gamepad_axes[2])
-    
+        self.pub_rc6.publish(self.gamepad_axes[3])
+
     def master_control(self):
         if self.override_controller == 1:
             self.publish_gamepad_command()
@@ -67,7 +74,7 @@ class Commander():
 
 if __name__ == "__main__":
     rospy.init_node('Commander', anonymous=True)
-    cmd = Commander()
+    cmd = Commander(pwm_forward=1500)
     while not rospy.is_shutdown():
         cmd.master_control()
         cmd.rate.sleep()
