@@ -220,7 +220,7 @@ class Bridge(object):
         # pwm 1000-2000
         mavutil.mavfile.set_servo(self.conn, id, pwm)
 
-    def set_rc_channel_pwm(self, id, pwm=1100):
+    def set_rc_channel_pwm(self, id, pwm=1500):
         """ Set RC channel pwm value
 
         Args:
