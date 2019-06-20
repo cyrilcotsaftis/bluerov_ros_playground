@@ -7,6 +7,7 @@ from std_msgs.msg import UInt16
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
 from bluerov_ros_playground.msg import Attitude
+from bluerov_ros_playground.msg import Set_heading
 
 PI = np.pi
 
@@ -15,8 +16,8 @@ class Heading_Controller():
         #pub_rc4 = rospy.Publisher('/BlueRov2/rc_channel4/set_pwm', UInt16, queue_size=10)
         #pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
         self.pub_pwm = rospy.Publisher('/Command/heading', UInt16, queue_size=10)
-        
-	rospy.Subscriber('/BlueRov2/imu/attitude', Attitude, self._callback_att)
+
+        rospy.Subscriber('/BlueRov2/imu/attitude', Attitude, self._callback_att)
 
         self.rate = rospy.Rate(rosrate)
         self.attitude = [0, 0, 0, 0, 0, 0] #[ROLL, PITCH, YAW, ROLLSPEED, PITCHSPEED, YAWSPEED]
@@ -26,39 +27,49 @@ class Heading_Controller():
         self.KP = KP
         self.KD = KD
 
+        rospy.Subscriber('/Settings/set_heading', Set_heading, self._callback_set_heading)
+
     def sawtooth (self, x):
         """to deal with 2*PI modulo"""
-	return (x+PI)%(2*PI)-PI
+        return (x+PI)%(2*PI)-PI         
 
     def _callback_att(self, msg):
-	self.attitude = [msg.roll,
-		    msg.pitch,
-		    msg.yaw,
-		    msg.rollspeed,
-		    msg.pitchspeed,
-		    msg.yawspeed]
+        self.attitude = [msg.roll,
+                         msg.pitch,
+                         msg.yaw,
+                         msg.rollspeed,
+                         msg.pitchspeed,
+                         msg.yawspeed]
+                   
+    def _callback_set_heading(self, msg):
+        self.heading_desired = msg.heading_desired
+        self.KP = msg.KP 
+        self.KD = msg.KD 
+        self.pwm_max = msg.pwm_max
+        self.pwm_neutral = msg.pwm_neutral
+        self.rosrate = msg.rosrate
 
     def control(self, yaw, yawspeed):
-	return self.KP*self.sawtooth(yaw-self.heading_desired) + self.KD*yawspeed
-	
+        return self.KP*self.sawtooth(yaw-self.heading_desired) + self.KD*yawspeed
+    
     def saturation(self, pwm):
-	pwm_min = self.pwm_neutral - (self.pwm_max - self.pwm_neutral)
-	if pwm > self.pwm_max :
-		pwm = self.pwm_max
-	if pwm < pwm_min:
-		pwm = pwm_min
-	return int(pwm)
+        pwm_min = self.pwm_neutral - (self.pwm_max - self.pwm_neutral)
+        if pwm > self.pwm_max :
+            pwm = self.pwm_max
+        if pwm < pwm_min:
+            pwm = pwm_min
+        return int(pwm)
 
     def main(self):
-	#pub_arm.publish(1)
+        #pub_arm.publish(1)
         yaw = self.attitude[2]
-	yawspeed = self.attitude[5]
-	u = self.control(yaw, yawspeed)
-	pwm = self.pwm_neutral - u
+        yawspeed = self.attitude[5]
+        u = self.control(yaw, yawspeed)
+        pwm = self.pwm_neutral - u
         pwm = self.saturation(pwm)
         print("order : {}, pwm : {}, yaw = {}".format(u,pwm,yaw))
-	#pub_rc4.publish(pwm)
-	self.pub_pwm.publish(pwm)
+        #pub_rc4.publish(pwm)
+        self.pub_pwm.publish(pwm)
 
 
 if __name__ == "__main__":

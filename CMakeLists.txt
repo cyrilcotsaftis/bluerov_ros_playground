@@ -52,6 +52,8 @@ add_message_files(
 	FILES
 	Bar30.msg
 	Attitude.msg
+	Set_depth.msg
+	Set_heading.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -214,6 +216,7 @@ catkin_install_python(PROGRAMS
   src/controller/depth_controller
   src/controller/heading_controller
   src/controller/commander
+  src/controller/setter
   src/controller/gamepad.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
