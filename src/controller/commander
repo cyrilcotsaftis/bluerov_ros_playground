@@ -41,12 +41,17 @@ class Commander():
         print("AXES : {}, BUTTONS : {}".format(self.gamepad_axes, self.gamepad_buttons))
 
     def publish_controller_command(self):
-	    self.pub_arm.publish(self.armed)
-	    self.pub_rc3.publish(self.pwm_depth)
-	    if abs(self.pwm_heading-self.pwm_neutral)>5:  # Correct the heading
-		    self.pub_rc4.publish(self.pwm_heading)
-	    else:
-		    self.pub_rc5.publish(self.pwm_forward) # Go forward
+        self.pub_arm.publish(self.armed)
+        self.pub_rc3.publish(self.pwm_depth)
+
+#	    if abs(self.pwm_heading-self.pwm_neutral)>5:  # Correct the heading
+#		    self.pub_rc4.publish(self.pwm_heading)
+#	    else:
+#		    self.pub_rc5.publish(self.pwm_forward) # Go forward
+
+        self.pub_rc4.publish(self.pwm_heading)
+        self.pub_rc5.publish(self.pwm_forward)
+
 
     def publish_gamepad_command(self):
         self.pub_arm.publish(self.gamepad_buttons[0])

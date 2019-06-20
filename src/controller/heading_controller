@@ -12,7 +12,7 @@ from bluerov_ros_playground.msg import Set_heading
 PI = np.pi
 
 class Heading_Controller():
-    def __init__(self, heading_desired = 2.88, KP=100, KD=10, pwm_max=1550, pwm_neutral=1500,rosrate=4):
+    def __init__(self, heading_desired = 2.88, KP=35, KD=25, pwm_max=1550, pwm_neutral=1500,rosrate=4):
         #pub_rc4 = rospy.Publisher('/BlueRov2/rc_channel4/set_pwm', UInt16, queue_size=10)
         #pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
         self.pub_pwm = rospy.Publisher('/Command/heading', UInt16, queue_size=10)
