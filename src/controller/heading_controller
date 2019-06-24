@@ -67,7 +67,7 @@ class Heading_Controller():
         u = self.control(yaw, yawspeed)
         pwm = self.pwm_neutral - u
         pwm = self.saturation(pwm)
-        print("order : {}, pwm : {}, yaw = {}".format(u,pwm,yaw))
+        #print("order : {}, pwm : {}, yaw = {}".format(u,pwm,yaw))
         #pub_rc4.publish(pwm)
         self.pub_pwm.publish(pwm)
 

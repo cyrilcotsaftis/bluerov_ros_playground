@@ -43,10 +43,12 @@ class Velocity_Control():
         delta_t = t - self.time
         self.time = t
         acceleration = self.imu_data[0]
-        self.velocity += acceleration*delta_t
-
+        self.velocity = acceleration*delta_t
+        print("ve :",self.velocity)
         u = self.KP*(self.velocity_desired-self.velocity) - self.KD*acceleration
+        print(self.KP*(self.velocity_desired-self.velocity) , -self.KD*acceleration)
         return u
+
 
     def saturation(self, pwm):
 	    pwm_min = self.pwm_neutral - (self.pwm_max - self.pwm_neutral)
@@ -61,6 +63,7 @@ class Velocity_Control():
         pwm = 1500 + u 
         pwm = self.saturation(pwm)
         self.pub_pwm.publish(pwm)
+        print("order_velo : {}, pwm : {} ".format(u,pwm))
 
 if __name__ == "__main__":
     rospy.init_node('velocity_controller', anonymous=True)

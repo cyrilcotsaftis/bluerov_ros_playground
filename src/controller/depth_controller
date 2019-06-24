@@ -13,7 +13,7 @@ p0 = 990*100 #Pa surface pressure NEED to be cheked
 rho = 1000 # kg.m^3  water density
 
 class Depth_Control():
-    def __init__(self, depth_desired=-0.20, pwm_max=1550, pwm_neutral=1500, K=500, rosrate=4):
+    def __init__(self, depth_desired=-0.20, pwm_max=1550, pwm_neutral=1500, K=0, rosrate=4):
         #self.pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
         #self.pub_rc3 = rospy.Publisher('/BlueRov2/rc_channel3/set_pwm', UInt16, queue_size=10)
 
@@ -67,11 +67,14 @@ class Depth_Control():
         self.depth = depth
         delta_t = (self.bar30_data[0] - self.time)/1000.
         self.time = self.bar30_data[0]
+        if delta_t!=0:
+            D_depth = delta_depth/delta_t
+            self.I_depth = (self.depth_desired-depth)*delta_t
 
-        D_depth = delta_depth/delta_t
-        self.I_depth += (self.depth_desired-depth)*delta_t
-
-        u = self.KI*self.I_depth + self.KP*(self.depth_desired-depth) - self.KD*D_depth
+            u = self.KI*self.I_depth + self.KP*(self.depth_desired-depth) - self.KD*D_depth
+            print( "depth :",self.KI*self.I_depth , self.KP*(self.depth_desired-depth) , self.KD*D_depth)
+        else :
+            u=0
 
         return u
 	
@@ -87,12 +90,13 @@ class Depth_Control():
 	    #pub_arm.publish(1)
         #self.logs_depthControl.write("bar30_data :{} \n".format(self.bar30_data[1]))
         mesured_pressure = self.bar30_data[1]*100 #to convert pressure from hPa to Pa
-        u = self.control(mesured_pressure)
+        u = self.control_pid(mesured_pressure)
         pwm = 1500 + u
         #self.logs_depthControl.write("pwm  :{} \n".format(pwm))
         #print(bar30_data[1],pwm) 
         pwm = self.saturation(pwm)
 	    #pub_rc3.publish(pwm)
+        #print("order_depth : {}, pwm : {},mesured_pressure : {} ".format(u,pwm, mesured_pressure))
         self.pub_pwm.publish(pwm)
 
 if __name__ == "__main__":

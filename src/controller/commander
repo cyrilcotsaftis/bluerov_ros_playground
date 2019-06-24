@@ -28,9 +28,9 @@ class Commander():
         self.pwm_depth = 0
         self.pwm_heading = 0
         
-        self.override_controller = 0 # 0:automatic control, 1:gamepad control
-        self.gamepad_axes = [self.pwm_neutral, self.pwm_neutral, self.pwm_neutral] # THROTTLE,YAW,FORWARD
-        self.gamepad_buttons = [0,0] # ARM, OVERRIDE_CONTROLLER
+        self.override_controller = 1 # 0:automatic control, 1:gamepad control
+        self.gamepad_axes = [self.pwm_neutral, self.pwm_neutral, self.pwm_neutral, self.pwm_neutral] # THROTTLE,YAW,FORWARD
+        self.gamepad_buttons = [0,0,0,0,0] # ARM, OVERRIDE_CONTROLLER
 
     def _callback_depth(self,msg):
 	    self.pwm_depth = msg.data
@@ -49,14 +49,14 @@ class Commander():
 
     def publish_controller_command(self):
         self.pub_arm.publish(self.armed)
-        self.pub_rc3.publish(self.pwm_depth)
+        #self.pub_rc3.publish(self.pwm_depth)
 
 #	    if abs(self.pwm_heading-self.pwm_neutral)>5:  # Correct the heading
 #		    self.pub_rc4.publish(self.pwm_heading)
 #	    else:
 #		    self.pub_rc5.publish(self.pwm_forward) # Go forward
 
-        self.pub_rc4.publish(self.pwm_heading)
+        #self.pub_rc4.publish(self.pwm_heading)
         self.pub_rc5.publish(self.pwm_forward)
 
 
