@@ -12,6 +12,7 @@ class Commander():
         self.pub_rc5 = rospy.Publisher('/BlueRov2/rc_channel5/set_pwm', UInt16, queue_size=10) #FORWARD
         self.pub_rc6 = rospy.Publisher('/BlueRov2/rc_channel6/set_pwm', UInt16, queue_size=10) #LATERAL
         self.pub_rc8 = rospy.Publisher('/BlueRov2/rc_channel8/set_pwm', UInt16, queue_size=10) #CAMERA TILT 
+        self.pub_rc9 = rospy.Publisher('/BlueRov2/rc_channel9/set_pwm', UInt16, queue_size=10) #LIGHTS ?
         rospy.Subscriber('/Command/depth', UInt16, self._callback_depth)
         rospy.Subscriber('/Command/heading', UInt16, self._callback_heading)
         rospy.Subscriber('/Command/joy', Joy, self._callback_joy)
@@ -60,6 +61,7 @@ class Commander():
         """
         self.pub_arm.publish(self.gamepad_buttons[0])
         self.pub_rc8.publish(self.gamepad_buttons[2])
+        self.pub_rc9.publish(self.gamepad_buttons[3])
         
         self.pub_rc3.publish(self.gamepad_axes[0])
         self.pub_rc4.publish(self.gamepad_axes[1])
@@ -69,8 +71,8 @@ class Commander():
     def master_control(self):
         if self.override_controller == 1:
             self.publish_gamepad_command()
-        else :
-            self.publish_controller_command()
+        #else :
+        #    self.publish_controller_command()
 
 if __name__ == "__main__":
     rospy.init_node('Commander', anonymous=True)

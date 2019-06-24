@@ -253,16 +253,16 @@ class Bridge(object):
             )
 
 if __name__ == '__main__':
-    #bridge = Bridge()
-    bridge = Bridge(device='udp:localhost:14550')
-    i=0
+    bridge = Bridge()
+    #bridge = Bridge(device='udp:localhost:14550')
+    #i=0
+    filemav = open("mavlinkdata.txt", 'w')
     while True:
         
         bridge.update()
-        filemav = open("mavlinkdata.txt", 'a')
         bridge.print_data()
         filemav.write("{}\n".format(bridge.data))
-        i+=1
+        #i+=1
     filemav.close()
         
 

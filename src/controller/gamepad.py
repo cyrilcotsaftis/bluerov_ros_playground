@@ -147,8 +147,8 @@ class Gamepad():
                 self.gain_light = self.gain_light_max
         elif state == -1:
             self.gain_light -= self.gain_light_inc 
-            if self.gain_light < 0:
-                self.gain_light = 0
+            if self.gain_light < 1100:
+                self.gain_light = 1100
         else:
             pass
         self.msg.buttons[3] = self.gain_light
