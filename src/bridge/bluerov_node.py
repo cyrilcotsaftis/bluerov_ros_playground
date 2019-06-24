@@ -260,7 +260,8 @@ class BlueRov(Bridge):
             msg (TYPE): ROS message
             _ (TYPE): description
         """
-        self.set_manual_control([0,0,0,0], msg.buttons)
+        a=0
+        #self.set_manual_control([0,0,0,0], msg.buttons)
 
     def _setpoint_velocity_cmd_vel_callback(self, msg, _):
         """ Set angular and linear velocity from topic
