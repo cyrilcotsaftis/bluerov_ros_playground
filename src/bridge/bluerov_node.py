@@ -32,6 +32,7 @@ from sensor_msgs.msg import Imu
 from std_msgs.msg import Bool
 from std_msgs.msg import String
 from std_msgs.msg import UInt16
+from sensor_msgs.msg import Joy
 from bluerov_ros_playground.msg import Bar30
 from bluerov_ros_playground.msg import Attitude 
 
@@ -131,6 +132,12 @@ class BlueRov(Bridge):
                 Bool,
                 1
             ],
+            [
+                self._manual_control_callback,
+                '/manual_control',
+                Joy,
+                1
+            ]
         ]
 
         self.mavlink_msg_available = {}
@@ -244,6 +251,16 @@ class BlueRov(Bridge):
             _ (TYPE): Description
         """
         self.arm_throttle(msg.data)
+
+    def _manual_control_callback(self, msg, _):
+        
+        """ Set manual control message from topic
+        
+        Args:
+            msg (TYPE): ROS message
+            _ (TYPE): description
+        """
+        self.set_manual_control([0,0,0,0], msg.buttons)
 
     def _setpoint_velocity_cmd_vel_callback(self, msg, _):
         """ Set angular and linear velocity from topic
