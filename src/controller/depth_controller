@@ -34,7 +34,7 @@ class Depth_Control():
 
         self.time = 0
         self.depth = 0
-        self.sum = 0
+        self.I_depth = 0
         
         rospy.Subscriber('/Settings/set_depth', Set_depth, self._callback_set_depth)
         
@@ -62,18 +62,18 @@ class Depth_Control():
         return u
 
     def control_pid(self, p):
-	    depth  = -(p-p0)/(rho*g)
-
-        depth_delta = depth - self.depth
+        depth  = -(p-p0)/(rho*g)
+        delta_depth = depth - self.depth
         self.depth = depth
-        delta_t = self.bar30_data[0] - self.time
+        delta_t = (self.bar30_data[0] - self.time)/1000.
         self.time = self.bar30_data[0]
-        ddepth = depth_delta/delta_t
-        self.sum += (self.depth_desired-depth)*delta_t
 
-	    u = self.KI*self.sum + self.KP*(self.depth_desired-depth) - self.KD*ddepth
+        D_depth = delta_depth/delta_t
+        self.I_depth += (self.depth_desired-depth)*delta_t
 
-	    return u
+        u = self.KI*self.I_depth + self.KP*(self.depth_desired-depth) - self.KD*D_depth
+
+        return u
 	
     def saturation(self, pwm):
 	    pwm_min = self.pwm_neutral - (self.pwm_max - self.pwm_neutral)
