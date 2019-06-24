@@ -12,23 +12,20 @@ class Gamepad():
         self.sub = rospy.Subscriber('/BlueRov2/arm', Bool, self._arm_callback) 
         self.rate = rospy.Rate(rosrate)
         self.model_base_link = '/base_link'
-
         self.pwm_max = pwm_max
         self.pwm_neutral = pwm_neutral
         self.gain_pwm_cam = gain_pwm_cam  
-
+        
+        self.list_buttons_clicked = [0]*16
         self.override_controller = 0 # 1 to override all pwm sended by controllers
         self.armed = False # False if BlueRov2 disarmed, True if armed 
-        self.gain_light = 1100
-        self.gain_light_inc = gain_light_inc
-        self.gain_light_max = gain_light_max
         #sensor_msgs/Joy :
         #  std_msgs/Header header
         #    uint32 seq
         #    time stamp
         #    string frame_id
         #  float32[] axes -> [THROTTLE, YAW, FORWARD, LATERAL]
-        #  int32[] buttons ->[ARM, OVERRIDE_CONTROLLER, PWM_CAM]
+        #  int32[] buttons ->[ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC]
         self.msg = Joy()
         self.msg.axes = [self.pwm_neutral, 
                 self.pwm_neutral, 
@@ -38,35 +35,40 @@ class Gamepad():
         self.msg.buttons = [self.armed, 
                 self.override_controller, 
                 self.pwm_neutral, 
-                self.gain_light]
+                0,
+                0]
         
         #device : logitech gamepad F310
-        self.input = {'ABS_Y': self._throttle, # LEFT soick vertical [0-255], 128 = neutral
+        self.input = {'ABS_Y': self._throttle, # LEFT stick vertical [0-255], 128 = neutral
             'ABS_X': self._lateral, # LEFT stick horizontal [0-255], 128 = neutral
             
             'ABS_RZ': self._forward, # RIGHT stick vertical [0-255], 128 = neutral
             'ABS_Z': self._yaw,  # RIGHT stick horizontal [0-255], 128 = neutral
             
-            'ABS_HAT0Y': self._NDEF, # LEFT cross vertical -1 left, up ; +1 right, down
-            'ABS_HAT0X': self._set_gain_light, # LEFT cross horizontal [-1;0;1]
+            'ABS_HAT0Y': self._NDEF, # id ArduSub[up:11, down:12], LEFT cross vertical -1 left, up ; +1 right, down
+            'ABS_HAT0X': self._set_gain_light, #id ArduSub [left:13, right:14], LEFT cross horizontal [-1;0;1]
+           
+            # id ArduSub : 7, LEFT stick click NONE DEF in INPUTS
+            # id ArduSub : 8, RIGHT stick click NONE DEF in INPUTS
+
             
-            'BTN_TRIGGER': self._override_controller, # X [0;1]
-            'BTN_TOP1': self._NDEF, # Y [0;1]
-            'BTN_THUMB': self._NDEF, # A [0;1]
-            'BTN_THUMB2': self._NDEF, # A [0,1]
+            'BTN_TRIGGER': self._override_controller, # id Ardusub : 2, X [0;1]
+            'BTN_TOP1': self._NDEF, # id Ardusub : 3, Y [0;1]
+            'BTN_THUMB': self._NDEF, # id Ardusub : 1, A [0;1]
+            'BTN_THUMB2': self._NDEF, # id Ardusub : 0, B [0,1]
 
             'BTN_BASE': self._NDEF, # LT [0;1]
             'BTN_BASE2': self._NDEF, # RT [0;1]
-            'BTN_TOP2': self._cam_down, # LB [0;1]
-            'BTN_PINKIE': self._cam_up, # RB [0;1]
+            'BTN_TOP2': self._cam_down, # id Ardusub : 9, LB [0;1]
+            'BTN_PINKIE': self._cam_up, # id Ardusub : 10,  RB [0;1]
             
-            'BTN_BASE3': self._disarm, # BACK [0;1]
-            'BTN_BASE4': self._arm, # START [0;1]
+            'BTN_BASE3': self._disarm, # id Ardusub : 4, BACK [0;1]
+            'BTN_BASE4': self._arm, # id Ardusub : 6, START [0;1]
             }
 
     def _arm_callback(self, msg):
         self.armed = msg.data
-        print('ARRMM ', self.armed)    
+        print('ARM ', self.armed)    
 
     def msg_header(self):
         self.msg.header.stamp = rospy.Time.now()
@@ -78,12 +80,14 @@ class Gamepad():
     def _arm(self, key, state):
         if not self.armed :
             self.armed = True
+        self.list_buttons_clicked[6] = state
         self.msg.buttons[0] = self.armed
         print("ARM, key : {}, state : {}, arm : {}".format(key, state, self.armed))
 
     def _disarm(self, key, state):
         if self.armed:
             self.armed = False 
+        self.list_buttons_clicked[4] = state
         self.msg.buttons[0] = self.armed
         print("DISARM, key : {}, state : {}, arm : {}".format(key, state, self.armed))
 
@@ -129,6 +133,7 @@ class Gamepad():
             pwm = self.pwm_neutral + self.gain_pwm_cam 
         else :
             pwm = self.pwm_neutral
+        self.list_buttons_clicked[10] = state
         self.msg.buttons[2] = pwm
         print("CAM_UP, key : {}, state : {}, pwm : {}".format(key, state, self.msg.buttons[2]))
 
@@ -137,22 +142,24 @@ class Gamepad():
             pwm = self.pwm_neutral - self.gain_pwm_cam 
         else :
             pwm = self.pwm_neutral
+        self.list_buttons_clicked[9] = state
         self.msg.buttons[2] = pwm
         print("CAM_DOWN, key : {}, state : {}, pwm : {}".format(key, state, self.msg.buttons[2]))
     
     def _set_gain_light(self, key, state):
         if state == 1:
-            self.gain_light += self.gain_light_inc 
-            if self.gain_light > self.gain_light_max:
-                self.gain_light = self.gain_light_max
+            self.msg.buttons[4] = 1
+            self.list_buttons_clicked[14] = 1
         elif state == -1:
-            self.gain_light -= self.gain_light_inc 
-            if self.gain_light < 1100:
-                self.gain_light = 1100
+            self.msg.buttons[3] = 1
+            self.list_buttons_clicked[13]=1
+
         else:
-            pass
-        self.msg.buttons[3] = self.gain_light
-        print("SET_GAIN_LIGHT, key : {}, state : {}, gain_light : {}".format(key, state, self.msg.buttons[3]))
+            self.msg.buttons[3] = 0
+            self.msg.buttons[4] = 0
+            self.list_buttons_clicked[13] = 0
+            self.list_buttons_clicked[14] = 0 
+        print("SET_GAIN_LIGHT, key : {}, state : {}, gain_dec : {}, gain_inc : {}".format(key, state, self.msg.buttons[3], self.msg.buttons[4]))
 
     def pwm_set_neutral(self,pwm):
         if pwm >= 1495 and pwm <= 1505: #to ensure that when stick are in the center neutral pwm i send
@@ -165,6 +172,7 @@ class Gamepad():
             #print(event.ev_type, event.code, event.state)
             if event.code in self.input:
                 self.input[event.code](event.code,event.state) #launch the method that correspond to the input 
+        print("LIST_BUTTONS_CLICKED : {}".format(self.list_buttons_clicked))
         self.msg_header()
         self.pub.publish(self.msg)
 

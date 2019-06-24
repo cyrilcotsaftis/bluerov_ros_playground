@@ -234,6 +234,25 @@ class Bridge(object):
             self.conn.target_system,                # target_system
             self.conn.target_component,             # target_component
             *rc_channel_values)                     # RC channel list, in microseconds.
+    
+    def set_manual_control(self,joy_list=[0]*4, buttons_list=[0]*16):
+        """ Set a MANUAL_CONTROL message for dealing with more control with ArduSub
+        for now it is just to deal with lights
+        """
+        x,y,z,r = 0,0,0,0 # INT16_MAX = 32767
+        b = 0
+        for i in range(len(buttons_list)):
+            b = b | (buttons_list[i]<<i)
+        print("MANUAL_CONTROL_SEND : x : {}, y : {}, z : {}, r : {}, b : {}".format(x,y,z,r,b))
+        #https://mavlink.io/en/messages/common.html MANUAL_CONTROL ( #69 )
+        self.conn.mav.manual_control_send(
+                self.conn.target_system,
+                x,
+                y,
+                z,
+                r,
+                b)
+
 
     def arm_throttle(self, arm_throttle):
         """ Arm throttle
