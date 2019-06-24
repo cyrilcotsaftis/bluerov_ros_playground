@@ -28,6 +28,13 @@ class Depth_Control():
         self.pwm_max = pwm_max
         self.pwm_neutral = pwm_neutral
         self.K = K #for the proportionnal controller
+        self.KI = K
+        self.KP = K
+        self.KD = K
+
+        self.time = 0
+        self.depth = 0
+        self.sum = 0
         
         rospy.Subscriber('/Settings/set_depth', Set_depth, self._callback_set_depth)
         
@@ -42,13 +49,30 @@ class Depth_Control():
         self.pwm_max = msg.pwm_max
         self.pwm_neutral = msg.pwm_neutral
         self.K = msg.K 
+        self.KI = msg.KI 
+        self.KP = msg.KP 
+        self.KD = msg.KD 
         self.rosrate = msg.rosrate
 
     def control(self, p):
-	    depth  = -(p-p0)/(rho*g)
+        depth  = -(p-p0)/(rho*g)
         #print("Real Depth :",depth  )
-	    u = self.K*(self.depth_desired-depth)
+        u = self.K*(self.depth_desired-depth)
         #self.logs_depthControl.write("depth : \n".format( depth ))
+        return u
+
+    def control_pid(self, p):
+	    depth  = -(p-p0)/(rho*g)
+
+        depth_delta = depth - self.depth
+        self.depth = depth
+        delta_t = self.bar30_data[0] - self.time
+        self.time = self.bar30_data[0]
+        ddepth = depth_delta/delta_t
+        self.sum += (self.depth_desired-depth)*delta_t
+
+	    u = self.KI*self.sum + self.KP*(self.depth_desired-depth) - self.KD*ddepth
+
 	    return u
 	
     def saturation(self, pwm):
