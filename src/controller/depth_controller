@@ -67,15 +67,15 @@ class Depth_Control():
         self.depth = depth
         delta_t = (self.bar30_data[0] - self.time)/1000.
         self.time = self.bar30_data[0]
-        if delta_t!=0:
+
+        if delta_t == 0:
+            D_depth = 0
+        else:
             D_depth = delta_depth/delta_t
-            self.I_depth = (self.depth_desired-depth)*delta_t
 
-            u = self.KI*self.I_depth + self.KP*(self.depth_desired-depth) - self.KD*D_depth
-            print( "depth :",self.KI*self.I_depth , self.KP*(self.depth_desired-depth) , self.KD*D_depth)
-        else :
-            u=0
-
+        self.I_depth = (self.depth_desired-depth)*delta_t
+        u = self.KI*self.I_depth + self.KP*(self.depth_desired-depth) - self.KD*D_depth
+        print( "depth :",self.KI*self.I_depth , self.KP*(self.depth_desired-depth) , self.KD*D_depth)
         return u
 	
     def saturation(self, pwm):
