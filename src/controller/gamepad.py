@@ -17,7 +17,7 @@ class Gamepad():
         self.gain_pwm_cam = gain_pwm_cam  
         
         self.list_buttons_clicked = [0]*16
-        self.override_controller = 0 # 1 to override all pwm sended by controllers
+        self.override_controller = 1 # 1 to override all pwm sended by controllers
         self.armed = False # False if BlueRov2 disarmed, True if armed 
         #sensor_msgs/Joy :
         #  std_msgs/Header header
