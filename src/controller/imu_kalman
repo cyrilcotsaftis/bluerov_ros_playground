@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+
+from pykalman import KalmanFilter
+import numpy as np
+import matplotlib.pyplot as plt
+
+import rospy
+from sensor_msgs.msg import Imu
+
+AccX_Value = 0
+AccX_Variance = 0.0020
+rosrate = 4
+
+def _callback_imu_data(msg):
+  global AccX_Value
+  AccX_Value = msg.linear_acceleration.x
+
+rospy.init_node('imu_kalman', anonymous=True)
+rospy.Subscriber('/BlueRov2/imu/data', Imu, _callback_imu_data)
+rate = rospy.Rate(rosrate)
+
+
+
+# time step
+dt = 1/rosrate
+
+# transition_matrix  
+F = [[1, dt, 0.5*dt**2], 
+     [0,  1,       dt],
+     [0,  0,        1]]
+
+# observation_matrix   
+H = [0, 0, 1]
+
+# transition_covariance 
+Q = [[0.2,    0,      0], 
+     [  0,  0.1,      0],
+     [  0,    0,  10e-4]]
+
+# observation_covariance 
+R = AccX_Variance
+
+# initial_state_mean
+X0 = [0,
+      0,
+      AccX_Value]
+
+# initial_state_covariance
+P0 = [[  0,    0,               0], 
+      [  0,    0,               0],
+      [  0,    0,   AccX_Variance]]
+
+
+global filtered_state_means
+global filtered_state_covariances
+global kf
+
+n_dim_state = 3
+filtered_state_means = np.zeros((2, n_dim_state))
+filtered_state_covariances = np.zeros((2, n_dim_state, n_dim_state))
+
+kf = KalmanFilter(transition_matrices = F, 
+                  observation_matrices = H, 
+                  transition_covariance = Q, 
+                  observation_covariance = R, 
+                  initial_state_mean = X0, 
+                  initial_state_covariance = P0)
+
+
+filtered_state_means[0] = X0
+filtered_state_covariances[0] = P0
+
+def kalman_update():
+  filtered_state_means[1], filtered_state_covariances[1] = (
+        kf.filter_update(
+            filtered_state_means[0],
+            filtered_state_covariances[0],
+            AccX_Value
+        )
+  )
+  filtered_state_means[0], filtered_state_covariances[0] = filtered_state_means[1], filtered_state_covariances[1]
+  
+
+#AccX_estimated = filtered_state_means[1, 2]
+#VelX_estimated = filtered_state_means[1, 1]
+#PosX_estimated = filtered_state_means[1, 0]
+
+
+if __name__ == "__main__":
+    rospy.init_node('imu_kalman', anonymous=True)
+ 
+    while not rospy.is_shutdown():
+        kalman_update()
+        print("AccX_Value", AccX_Value)
+        print("AccX_estimated", filtered_state_means[1, 2])
+        print("VelX_estimated", filtered_state_means[1, 1])
+        print("PosX_estimated", filtered_state_means[1, 0]) 
+        rate.sleep()
