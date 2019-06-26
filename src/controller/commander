@@ -79,10 +79,12 @@ class Commander():
         self.pub_manual_control.publish(msg)
 
     def master_control(self):
-        if self.override_controller == 1:
-            self.publish_gamepad_command()
-        else :
-            self.publish_controller_command()
+ #       if self.override_controller == 1:
+ #           self.publish_gamepad_command()
+ #       else :
+ #           self.publish_controller_command()
+
+        self.publish_controller_command()
 
 if __name__ == "__main__":
     rospy.init_node('Commander', anonymous=True)

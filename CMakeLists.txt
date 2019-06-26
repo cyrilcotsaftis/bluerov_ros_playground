@@ -219,6 +219,7 @@ catkin_install_python(PROGRAMS
   src/controller/velocity_controller
   src/controller/commander
   src/controller/setter
+  src/controller/imu_kalman
   src/controller/gamepad.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
