@@ -245,7 +245,7 @@ class Bridge(object):
             b = b | (buttons_list[i]<<i)
         print("MANUAL_CONTROL_SEND : x : {}, y : {}, z : {}, r : {}, b : {}".format(x,y,z,r,b))
         #https://mavlink.io/en/messages/common.html MANUAL_CONTROL ( #69 )
-        #self.conn.mav.manual_control_send(
+        self.conn.mav.manual_control_send(
                 self.conn.target_system,
                 x,
                 y,
