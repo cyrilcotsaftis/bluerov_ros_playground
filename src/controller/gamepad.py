@@ -7,7 +7,7 @@ from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
 
 class Gamepad():
-    def __init__(self, pwm_max=1650, pwm_neutral=1500, gain_pwm_cam = 400, gain_light_inc=50, gain_light_max=1900, rosrate=4):
+    def __init__(self, pwm_max=1900, pwm_neutral=1500, gain_pwm_cam = 400, rosrate=4):
         self.pub = rospy.Publisher('/Command/joy', Joy, queue_size=10)
         self.sub = rospy.Subscriber('/BlueRov2/arm', Bool, self._arm_callback) 
         self.rate = rospy.Rate(rosrate)

@@ -22,7 +22,6 @@ class Depth_Control():
 
         self.rate = rospy.Rate(rosrate)
         self.logs_depthControl = open("logs_depthControl.txt", 'a')
-
         self.depth_desired = depth_desired
         self.bar30_data = [0, 0, 0, 0] # [time_boot_ms, press_abs, press_diff, temperature]
         self.pwm_max = pwm_max
@@ -58,7 +57,6 @@ class Depth_Control():
         depth  = -(p-p0)/(rho*g)
         #print("Real Depth :",depth  )
         u = self.K*(self.depth_desired-depth)
-        #self.logs_depthControl.write("depth : \n".format( depth ))
         return u
 
     def control_pid(self, p):
@@ -76,6 +74,7 @@ class Depth_Control():
         self.I_depth = (self.depth_desired-depth)*delta_t
         u = self.KI*self.I_depth + self.KP*(self.depth_desired-depth) - self.KD*D_depth
         print( "depth :",self.KI*self.I_depth , self.KP*(self.depth_desired-depth) , self.KD*D_depth)
+        self.logs_depthControl.write("depth,depth_desired,ki,kp,kd;{}, {}, {}, {}, {} ".format( depth, self.depth_desired,self.KI,self.KP,self.KD ))
         return u
 	
     def saturation(self, pwm):
