@@ -25,7 +25,7 @@ class Gamepad():
         #    time stamp
         #    string frame_id
         #  float32[] axes -> [THROTTLE, YAW, FORWARD, LATERAL]
-        #  int32[] buttons ->[ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC]
+        #  int32[] buttons ->[ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC, GAIN_LIGHT]
         self.msg = Joy()
         self.msg.axes = [self.pwm_neutral, 
                 self.pwm_neutral, 
@@ -34,10 +34,14 @@ class Gamepad():
 
         self.msg.buttons = [self.armed, 
                 self.override_controller, 
-                self.pwm_neutral, 
+                self.pwm_neutral,
                 0,
-                0]
-        
+                0,
+                1100]
+       
+        self.gain_light = 1100
+        self.inc_gain_light = 100
+
         #device : logitech gamepad F310
         self.input = {'ABS_Y': self._throttle, # LEFT stick vertical [0-255], 128 = neutral
             'ABS_X': self._lateral, # LEFT stick horizontal [0-255], 128 = neutral
@@ -98,7 +102,7 @@ class Gamepad():
             self.override_controller = 0
         self.msg.buttons[1] = self.override_controller
         print("OVERRIDE_CONTROLLER, key : {}, state, {}, override_controller : {}".format(key, state, self.override_controller))
-
+        
     def _throttle(self, key, state):
         state = 255-state #to fix 255 top, 0 down (default : 0 up, 255 down)
         pwm_min = self.pwm_neutral - (self.pwm_max-self.pwm_neutral)
@@ -150,16 +154,23 @@ class Gamepad():
         if state == 1:
             self.msg.buttons[4] = 1
             self.list_buttons_clicked[14] = 1
+
+            self.gain_light = self.gain_light+self.inc_gain_light
+            self.msg.buttons[5] = self.gain_light
+
         elif state == -1:
             self.msg.buttons[3] = 1
             self.list_buttons_clicked[13]=1
+
+            self.gain_light = self.gain_light-self.inc_gain_light
+            self.msg.buttons[5] = self.gain_light
 
         else:
             self.msg.buttons[3] = 0
             self.msg.buttons[4] = 0
             self.list_buttons_clicked[13] = 0
             self.list_buttons_clicked[14] = 0 
-        print("SET_GAIN_LIGHT, key : {}, state : {}, gain_dec : {}, gain_inc : {}".format(key, state, self.msg.buttons[3], self.msg.buttons[4]))
+        print("SET_GAIN_LIGHT, key : {}, state : {}, gain_light : {}, gain_dec : {}, gain_inc : {}".format(key, state, self.msg.buttons[5], self.msg.buttons[3], self.msg.buttons[4]))
 
     def pwm_set_neutral(self,pwm):
         if pwm >= 1495 and pwm <= 1505: #to ensure that when stick are in the center neutral pwm i send

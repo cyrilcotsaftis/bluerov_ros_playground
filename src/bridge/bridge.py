@@ -227,7 +227,7 @@ class Bridge(object):
             id (TYPE): Channel id
             pwm (int, optional): Channel pwm value 1100-2000
         """
-        rc_channel_values = [65535 for _ in range(8)]
+        rc_channel_values = [65535 for _ in range(10)]
         rc_channel_values[id] = pwm
         #http://mavlink.org/messages/common#RC_CHANNELS_OVERRIDE
         self.conn.mav.rc_channels_override_send(
@@ -245,13 +245,13 @@ class Bridge(object):
             b = b | (buttons_list[i]<<i)
         print("MANUAL_CONTROL_SEND : x : {}, y : {}, z : {}, r : {}, b : {}".format(x,y,z,r,b))
         #https://mavlink.io/en/messages/common.html MANUAL_CONTROL ( #69 )
-       #self.conn.mav.manual_control_send(
-         #       self.conn.target_system,
-          #      x,
-           #     y,
-            #    z,
-             #   r,
-              #  b)
+        self.conn.mav.manual_control_send(
+               self.conn.target_system,
+                x,
+                y,
+                z,
+                r,
+                b)
 
 
     def arm_throttle(self, arm_throttle):
@@ -275,14 +275,15 @@ if __name__ == '__main__':
     bridge = Bridge()
     #bridge = Bridge(device='udp:localhost:14550')
     #i=0
-    filemav = open("mavlinkdata.txt", 'w')
+    #filemav = open("mavlinkdata.txt", 'w')
     while True:
         
         bridge.update()
         bridge.print_data()
-        filemav.write("{}\n".format(bridge.data))
+        #filemav.write("{}\n".format(bridge.data))
+        #bridge.set_servo_pwm(9,1800)
         #i+=1
-    filemav.close()
+    #filemav.close()
         
 
 

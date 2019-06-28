@@ -4,14 +4,17 @@ import rospy
 from std_msgs.msg import UInt16
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Joy
+from time import sleep
 
 class Commander():
-    def __init__(self, arm=True, pwm_forward=1550, pwm_neutral=1500, rosrate=4):
+    def __init__(self, arm=True, pwm_forward=1500, pwm_neutral=1500, rosrate=4):
         self.pub_rc3 = rospy.Publisher('/BlueRov2/rc_channel3/set_pwm', UInt16, queue_size=10) #THROTTLE
         self.pub_rc4 = rospy.Publisher('/BlueRov2/rc_channel4/set_pwm', UInt16, queue_size=10) #YAW
         self.pub_rc5 = rospy.Publisher('/BlueRov2/rc_channel5/set_pwm', UInt16, queue_size=10) #FORWARD
         self.pub_rc6 = rospy.Publisher('/BlueRov2/rc_channel6/set_pwm', UInt16, queue_size=10) #LATERAL
         self.pub_rc8 = rospy.Publisher('/BlueRov2/rc_channel8/set_pwm', UInt16, queue_size=10) #CAMERA TILT 
+        self.pub_rc9 = rospy.Publisher('/BlueRov2/rc_channel9/set_pwm', UInt16, queue_size=10) #LIGHTS 1
+        self.pub_rc10 = rospy.Publisher('/BlueRov2/rc_channel10/set_pwm', UInt16, queue_size=10) #LIGHTS 2
         self.pub_manual_control = rospy.Publisher('/BlueRov2/manual_control', Joy, queue_size=10)
 
         rospy.Subscriber('/Command/depth', UInt16, self._callback_depth)
@@ -24,19 +27,19 @@ class Commander():
         
         self.pwm_forward = pwm_forward
         self.pwm_neutral = 1500
-        self.armed = arm
+        self.armed = False#arm
         self.pwm_depth = 0
         self.pwm_heading = 0
         
         self.override_controller = 1 # 0:automatic control, 1:gamepad control
         self.gamepad_axes = [self.pwm_neutral, self.pwm_neutral, self.pwm_neutral, self.pwm_neutral] # THROTTLE,YAW,FORWARD
-        self.gamepad_buttons = [0,0,0,0,0] # ARM, OVERRIDE_CONTROLLER
+        self.gamepad_buttons = [0,0,0,0,0, 1100] # ARM, OVERRIDE_CONTROLLER
 
     def _callback_depth(self,msg):
-	    self.pwm_depth = msg.data
+        self.pwm_depth = msg.data
 
     def _callback_heading(self,msg):
-	    self.pwm_heading = msg.data
+        self.pwm_heading = msg.data
 
     def _callback_velocity(self,msg):
         self.pwm_forward = msg.data
@@ -57,15 +60,18 @@ class Commander():
 #		    self.pub_rc5.publish(self.pwm_forward) # Go forward
 
         self.pub_rc4.publish(self.pwm_heading)
-        self.pub_rc5.publish(1600)#5elf.pwm_forward)
+        self.pub_rc5.publish(self.pwm_forward)
 
 
     def publish_gamepad_command(self):
         """gamepad_axes = [THROTTLE, YAW, FORWARD, LATERAL]
            gamepad_buttons = [ARM, OVERRIDE_CONTROLLER, PWM_CAMERA, LIGHT_DEC, LIGHT_INC]
         """
+        print(self.gamepad_buttons)
         self.pub_arm.publish(self.gamepad_buttons[0])
         self.pub_rc8.publish(self.gamepad_buttons[2]) #CAMERA
+        self.pub_rc9.publish(self.gamepad_buttons[5])
+        self.pub_rc10.publish(self.gamepad_buttons[5])
         
         self.pub_rc3.publish(self.gamepad_axes[0]) # THROTTLE
         self.pub_rc4.publish(self.gamepad_axes[1]) # YAW
@@ -79,16 +85,16 @@ class Commander():
         self.pub_manual_control.publish(msg)
 
     def master_control(self):
- #       if self.override_controller == 1:
- #           self.publish_gamepad_command()
- #       else :
- #           self.publish_controller_command()
+        if self.override_controller == 1:
+            self.publish_gamepad_command()
+#        else :
+#            self.publish_controller_command()
 
-        self.publish_controller_command()
 
 if __name__ == "__main__":
     rospy.init_node('Commander', anonymous=True)
     cmd = Commander(pwm_forward=1500)
+    sleep(5)
     while not rospy.is_shutdown():
         cmd.master_control()
         cmd.rate.sleep()
