@@ -47,7 +47,7 @@ if __name__ == "__main__":
 	pub_velocity = rospy.Publisher('/Settings/set_velocity', Set_velocity, queue_size=10)
 	msg_depth = set_msg_depth(-0.2, 1650, 1500, 0,    100, 600, 50,       4)
 	msg_heading = set_msg_heading(2.96, 35, 25, 1550, 1500, 4)
-	msg_velocity = set_msg_velocity(1., 100, 25, 1550, 1500, 4)
+	msg_velocity = set_msg_velocity(2., 100, 25, 1800, 1500, 6)
 
 	while not rospy.is_shutdown():
 		pub_depth.publish(msg_depth)

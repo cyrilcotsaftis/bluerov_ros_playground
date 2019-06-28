@@ -75,7 +75,7 @@ class Depth_Control():
 
         self.I_depth = (self.depth_desired-depth)*delta_t
         u = self.KI*self.I_depth + self.KP*(self.depth_desired-depth) - self.KD*D_depth
-        print( "depth :",self.KI*self.I_depth , self.KP*(self.depth_desired-depth) , self.KD*D_depth)
+#        print( "depth :",self.KI*self.I_depth , self.KP*(self.depth_desired-depth) , self.KD*D_depth)
         return u
 	
     def saturation(self, pwm):
