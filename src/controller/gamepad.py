@@ -7,7 +7,7 @@ from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
 
 class Gamepad():
-    def __init__(self, pwm_max=1650, pwm_neutral=1500, gain_pwm_cam = 400, gain_light_inc=50, gain_light_max=1900, rosrate=4):
+    def __init__(self, pwm_max=1900, pwm_neutral=1500, gain_pwm_cam = 400, rosrate=4):
         self.pub = rospy.Publisher('/Command/joy', Joy, queue_size=10)
         self.sub = rospy.Subscriber('/BlueRov2/arm', Bool, self._arm_callback) 
         self.rate = rospy.Rate(rosrate)
@@ -17,7 +17,7 @@ class Gamepad():
         self.gain_pwm_cam = gain_pwm_cam  
         
         self.list_buttons_clicked = [0]*16
-        self.override_controller = 0 # 1 to override all pwm sended by controllers
+        self.override_controller = 1 # 1 to override all pwm sended by controllers
         self.armed = False # False if BlueRov2 disarmed, True if armed 
         #sensor_msgs/Joy :
         #  std_msgs/Header header
@@ -25,7 +25,7 @@ class Gamepad():
         #    time stamp
         #    string frame_id
         #  float32[] axes -> [THROTTLE, YAW, FORWARD, LATERAL]
-        #  int32[] buttons ->[ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC]
+        #  int32[] buttons ->[ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC, GAIN_LIGHT]
         self.msg = Joy()
         self.msg.axes = [self.pwm_neutral, 
                 self.pwm_neutral, 
@@ -34,10 +34,14 @@ class Gamepad():
 
         self.msg.buttons = [self.armed, 
                 self.override_controller, 
-                self.pwm_neutral, 
+                self.pwm_neutral,
                 0,
-                0]
-        
+                0,
+                1100]
+       
+        self.gain_light = 1100
+        self.inc_gain_light = 100
+
         #device : logitech gamepad F310
         self.input = {'ABS_Y': self._throttle, # LEFT stick vertical [0-255], 128 = neutral
             'ABS_X': self._lateral, # LEFT stick horizontal [0-255], 128 = neutral
@@ -98,7 +102,7 @@ class Gamepad():
             self.override_controller = 0
         self.msg.buttons[1] = self.override_controller
         print("OVERRIDE_CONTROLLER, key : {}, state, {}, override_controller : {}".format(key, state, self.override_controller))
-
+        
     def _throttle(self, key, state):
         state = 255-state #to fix 255 top, 0 down (default : 0 up, 255 down)
         pwm_min = self.pwm_neutral - (self.pwm_max-self.pwm_neutral)
@@ -150,16 +154,23 @@ class Gamepad():
         if state == 1:
             self.msg.buttons[4] = 1
             self.list_buttons_clicked[14] = 1
+
+            self.gain_light = self.gain_light+self.inc_gain_light
+            self.msg.buttons[5] = self.gain_light
+
         elif state == -1:
             self.msg.buttons[3] = 1
             self.list_buttons_clicked[13]=1
+
+            self.gain_light = self.gain_light-self.inc_gain_light
+            self.msg.buttons[5] = self.gain_light
 
         else:
             self.msg.buttons[3] = 0
             self.msg.buttons[4] = 0
             self.list_buttons_clicked[13] = 0
             self.list_buttons_clicked[14] = 0 
-        print("SET_GAIN_LIGHT, key : {}, state : {}, gain_dec : {}, gain_inc : {}".format(key, state, self.msg.buttons[3], self.msg.buttons[4]))
+        print("SET_GAIN_LIGHT, key : {}, state : {}, gain_light : {}, gain_dec : {}, gain_inc : {}".format(key, state, self.msg.buttons[5], self.msg.buttons[3], self.msg.buttons[4]))
 
     def pwm_set_neutral(self,pwm):
         if pwm >= 1495 and pwm <= 1505: #to ensure that when stick are in the center neutral pwm i send

@@ -118,7 +118,7 @@ class BlueRov(Bridge):
                 '/rc_channel{}/set_pwm',
                 UInt16,
                 1,
-                [1, 2, 3, 4, 5, 6, 7, 8]
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             ],
             [
                 self._set_mode_callback,
