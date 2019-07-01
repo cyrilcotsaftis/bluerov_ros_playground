@@ -53,6 +53,8 @@ checkBox :
 
 pushButton :
 	SET PARAMETERS :
-	pushButton_send_parameters
-
+	pushButton_send_parameters_depth
+	pushButton_send_parameters_heading
+	pushButton_send_parameters_velocity
+	pushButton_send_parameters_attitude
  

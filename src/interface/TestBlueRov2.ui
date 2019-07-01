@@ -10,17 +10,8 @@
     <height>963</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
    <string>BlueRov2</string>
-  </property>
-  <property name="autoFillBackground">
-   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="gridLayoutWidget">
@@ -28,7 +19,7 @@
      <rect>
       <x>10</x>
       <y>210</y>
-      <width>690</width>
+      <width>670</width>
       <height>207</height>
      </rect>
     </property>
@@ -96,20 +87,10 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="4">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_heading"/>
-     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>SET PARAMETERS</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="4">
-      <widget class="QSpinBox" name="spinBox_KP_depth">
-       <property name="maximum">
-        <number>1000</number>
        </property>
       </widget>
      </item>
@@ -123,12 +104,11 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="4">
-      <widget class="QSpinBox" name="spinBox_KP_heading">
-       <property name="maximum">
-        <number>1000</number>
-       </property>
-      </widget>
+     <item row="1" column="4">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_heading"/>
+     </item>
+     <item row="3" column="4">
+      <widget class="QSpinBox" name="spinBox_KP_depth"/>
      </item>
      <item row="3" column="3">
       <widget class="QLabel" name="label_16">
@@ -140,12 +120,8 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="7">
-      <widget class="QSpinBox" name="spinBox_KD_velocity">
-       <property name="maximum">
-        <number>1000</number>
-       </property>
-      </widget>
+     <item row="4" column="4">
+      <widget class="QSpinBox" name="spinBox_KP_heading"/>
      </item>
      <item row="3" column="1">
       <widget class="QLabel" name="label_15">
@@ -167,19 +143,6 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="7">
-      <widget class="QSpinBox" name="spinBox_KD_depth">
-       <property name="maximum">
-        <number>1000</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-       <property name="displayIntegerBase">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="6">
       <widget class="QLabel" name="label_12">
        <property name="text">
@@ -189,9 +152,6 @@
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_depth"/>
      </item>
      <item row="5" column="1">
       <widget class="QLabel" name="label_21">
@@ -203,12 +163,11 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="7">
-      <widget class="QSpinBox" name="spinBox_KD_heading">
-       <property name="maximum">
-        <number>1000</number>
-       </property>
-      </widget>
+     <item row="3" column="7">
+      <widget class="QSpinBox" name="spinBox_KD_depth"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_depth"/>
      </item>
      <item row="1" column="3">
       <widget class="QLabel" name="label_11">
@@ -220,6 +179,9 @@
        </property>
       </widget>
      </item>
+     <item row="4" column="7">
+      <widget class="QSpinBox" name="spinBox_KD_heading"/>
+     </item>
      <item row="4" column="3">
       <widget class="QLabel" name="label_19">
        <property name="text">
@@ -227,13 +189,6 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="2">
-      <widget class="QSpinBox" name="spinBox_KI_heading">
-       <property name="maximum">
-        <number>1000</number>
        </property>
       </widget>
      </item>
@@ -257,19 +212,8 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="2">
-      <widget class="QSpinBox" name="spinBox_KI_velocity">
-       <property name="maximum">
-        <number>1000</number>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="4">
-      <widget class="QSpinBox" name="spinBox__KP_velocity">
-       <property name="maximum">
-        <number>1000</number>
-       </property>
-      </widget>
+     <item row="4" column="2">
+      <widget class="QSpinBox" name="spinBox_KI_heading"/>
      </item>
      <item row="4" column="1">
       <widget class="QLabel" name="label_18">
@@ -281,62 +225,20 @@
        </property>
       </widget>
      </item>
+     <item row="5" column="2">
+      <widget class="QSpinBox" name="spinBox_KI_velocity"/>
+     </item>
+     <item row="5" column="4">
+      <widget class="QSpinBox" name="spinBox__KP_velocity"/>
+     </item>
+     <item row="5" column="7">
+      <widget class="QSpinBox" name="spinBox_KD_velocity"/>
+     </item>
      <item row="3" column="2">
-      <widget class="QSpinBox" name="spinBox_KI_depth">
-       <property name="maximum">
-        <number>1000</number>
-       </property>
-      </widget>
+      <widget class="QSpinBox" name="spinBox_KI_depth"/>
      </item>
-     <item row="3" column="8">
-      <widget class="QPushButton" name="pushButton_send_parameters_depth">
-       <property name="text">
-        <string>SEND</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="8">
-      <widget class="QPushButton" name="pushButton_send_parameters_heading">
-       <property name="text">
-        <string>SEND</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="8">
-      <widget class="QPushButton" name="pushButton_send_parameters_velocity">
-       <property name="text">
-        <string>SEND</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QLabel" name="label_37">
-       <property name="text">
-        <string>PWM MAX</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="3">
-      <widget class="QSpinBox" name="spinBox_pwm_max">
-       <property name="minimum">
-        <number>1100</number>
-       </property>
-       <property name="maximum">
-        <number>1900</number>
-       </property>
-       <property name="singleStep">
-        <number>50</number>
-       </property>
-       <property name="value">
-        <number>1500</number>
-       </property>
-       <property name="displayIntegerBase">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="8">
-      <widget class="QPushButton" name="pushButton_send_parameters_attitude">
+     <item row="6" column="7">
+      <widget class="QPushButton" name="pushButton_send_parameters">
        <property name="text">
         <string>SEND</string>
        </property>
@@ -358,17 +260,7 @@
       <enum>QLayout::SetMinimumSize</enum>
      </property>
      <item row="2" column="2">
-      <widget class="QLCDNumber" name="depth_controller_pwm_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="depth_controller_pwm_display_2"/>
      </item>
      <item row="2" column="8">
       <widget class="QCheckBox" name="checkBox_activate_depth_controller">
@@ -486,153 +378,46 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLCDNumber" name="depth_measured_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="depth_measured_display"/>
      </item>
      <item row="2" column="5">
-      <widget class="QLCDNumber" name="depth_controller_KI_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="depth_controller_KI_display"/>
      </item>
      <item row="2" column="6">
-      <widget class="QLCDNumber" name="depth_controller_KP_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="depth_controller_KP_display"/>
      </item>
      <item row="2" column="7">
-      <widget class="QLCDNumber" name="depth_controller_KD_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="depth_controller_KI_display_2"/>
      </item>
      <item row="3" column="1">
-      <widget class="QLCDNumber" name="heading_measured_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="heading_measured_display"/>
      </item>
      <item row="3" column="2">
-      <widget class="QLCDNumber" name="heading_controller_pwm_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="heading_controller_pwm_display"/>
      </item>
      <item row="3" column="5">
-      <widget class="QLCDNumber" name="heading_controller_KI_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="heading_controller_KI_display"/>
      </item>
      <item row="3" column="6">
-      <widget class="QLCDNumber" name="heading_controller_KP_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="heading_controller_KP_display"/>
      </item>
      <item row="3" column="7">
-      <widget class="QLCDNumber" name="heading_controller_KD_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="heading_controller_KD_display"/>
      </item>
      <item row="4" column="1">
-      <widget class="QLCDNumber" name="velocity_measured_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="velocity_measured_display"/>
      </item>
      <item row="4" column="2">
-      <widget class="QLCDNumber" name="velocity_controller_pwm_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="velocity_controller_pwm_display"/>
      </item>
      <item row="4" column="5">
-      <widget class="QLCDNumber" name="velocity_controller_KI_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="velocity_controller_KI_display"/>
      </item>
      <item row="4" column="6">
-      <widget class="QLCDNumber" name="velocity_controller_KP_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="velocity_controller_KP_display"/>
      </item>
      <item row="4" column="7">
-      <widget class="QLCDNumber" name="velocity_controller_KD_display">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
+      <widget class="QLCDNumber" name="velocity_controller_KD_display"/>
      </item>
      <item row="0" column="3">
       <widget class="QLabel" name="label_26">
@@ -656,44 +441,6 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_status">
-     <item row="2" column="3">
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLCDNumber" name="battery_level_display">
-         <property name="font">
-          <font>
-           <pointsize>20</pointsize>
-          </font>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="smallDecimalPoint">
-          <bool>true</bool>
-         </property>
-         <property name="digitCount">
-          <number>7</number>
-         </property>
-         <property name="segmentStyle">
-          <enum>QLCDNumber::Flat</enum>
-         </property>
-         <property name="intValue" stdset="0">
-          <number>0</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_36">
-         <property name="text">
-          <string>V</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
      <item row="1" column="1">
       <widget class="QLabel" name="label_32">
        <property name="text">
@@ -744,10 +491,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="5">
-      <widget class="QTextBrowser" name="light_level_display"/>
+     <item row="2" column="3">
+      <widget class="QTextBrowser" name="battery_level_display"/>
      </item>
-     <item row="1" column="5">
+     <item row="1" column="4">
       <widget class="QLabel" name="label_35">
        <property name="text">
         <string>Light level</string>
@@ -756,6 +503,9 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
+     </item>
+     <item row="2" column="4">
+      <widget class="QTextBrowser" name="light_level_display"/>
      </item>
     </layout>
    </widget>
