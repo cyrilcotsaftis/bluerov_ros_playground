@@ -8,8 +8,8 @@ import rospy
 from sensor_msgs.msg import Imu
 
 AccX_Value = 0
-AccX_Variance = 0.0020
-rosrate = 4
+AccX_Variance = 0.05
+rosrate = 6.
 
 def _callback_imu_data(msg):
   global AccX_Value
@@ -38,6 +38,7 @@ Q = [[0.2,    0,      0],
      [  0,    0,  10e-4]]
 
 # observation_covariance 
+#(the value can be calculated based on your sensors datasheet).
 R = AccX_Variance
 
 # initial_state_mean
@@ -75,7 +76,7 @@ def kalman_update():
         kf.filter_update(
             filtered_state_means[0],
             filtered_state_covariances[0],
-            AccX_Value
+            [AccX_Value]
         )
   )
   filtered_state_means[0], filtered_state_covariances[0] = filtered_state_means[1], filtered_state_covariances[1]
@@ -95,4 +96,5 @@ if __name__ == "__main__":
         print("AccX_estimated", filtered_state_means[1, 2])
         print("VelX_estimated", filtered_state_means[1, 1])
         print("PosX_estimated", filtered_state_means[1, 0]) 
+        
         rate.sleep()
