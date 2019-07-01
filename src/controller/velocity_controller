@@ -6,6 +6,7 @@ from std_msgs.msg import UInt16
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
 from bluerov_ros_playground.msg import Set_velocity
+from bluerov_ros_playground.msg import Set_attitude
 
 class Velocity_Control():
     def __init__(self, velocity_desired=1, pwm_max=1550, pwm_neutral=1500, KP=100, KD=25, rosrate=4):
@@ -24,6 +25,7 @@ class Velocity_Control():
         self.velocity = 0
     
         rospy.Subscriber('/Settings/set_velocity', Set_velocity, self._callback_set_vel)
+        rospy.Subscriber('/Settings/set_attitude', Set_attitude, self._callback_set_attitude)
         
     def _callback_imu_data(self, msg):
 	    self.imu_data = [msg.linear_acceleration.x,
@@ -31,23 +33,22 @@ class Velocity_Control():
                         msg.linear_acceleration.z]
         	                
     def _callback_set_vel(self, msg):
-        self.velocity_desired = msg.velocity_desired
         self.pwm_max = msg.pwm_max
-        self.pwm_neutral = msg.pwm_neutral
         self.KP = msg.KP 
         self.KD = msg.KD 
-        self.rosrate = msg.rosrate
+
+    def _callback_set_attitude(self, msg):
+        self.velocity_desired = msg.velocity_desired
+
 
     def control(self):
         t = rospy.get_time() #time in secs
         delta_t = t - self.time
-        print("delta_t", delta_t)
         self.time = t
         acceleration = self.imu_data[0]
         self.velocity = acceleration*delta_t
-        print("ve :",self.velocity)
         u = self.KP*(self.velocity_desired-self.velocity) - self.KD*acceleration
-        print(self.KP*(self.velocity_desired-self.velocity) , -self.KD*acceleration)
+        #print(self.KP*(self.velocity_desired-self.velocity) , -self.KD*acceleration)
         return u
 
 
@@ -64,7 +65,7 @@ class Velocity_Control():
         pwm = 1500 + u 
         pwm = self.saturation(pwm)
         self.pub_pwm.publish(pwm)
-        print("order_velo : {}, pwm : {} ".format(u,pwm))
+        print("VELOCITY_DESIRED : {}, VELOCITY_MESURED : {}, PWM : {} ".format(self.velocity_desired,'Not_implemented_yet', pwm))
 
 if __name__ == "__main__":
     rospy.init_node('velocity_controller', anonymous=True)

@@ -6,6 +6,7 @@ from std_msgs.msg import UInt16
 from std_msgs.msg import Bool
 from bluerov_ros_playground.msg import Bar30
 from bluerov_ros_playground.msg import Set_depth
+from bluerov_ros_playground.msg import Set_attitude
 #axis z goes up
 
 g = 9.81  # m.s^-2 gravitationnal acceleration 
@@ -13,7 +14,7 @@ p0 = 990*100 #Pa surface pressure NEED to be cheked
 rho = 1000 # kg.m^3  water density
 
 class Depth_Control():
-    def __init__(self, depth_desired=-0.20, pwm_max=1550, pwm_neutral=1500, K=0, rosrate=4):
+    def __init__(self, depth_desired=0, pwm_max=1550, pwm_neutral=1500, K=0, rosrate=4):
         #self.pub_arm = rospy.Publisher('/BlueRov2/arm', Bool, queue_size=10)
         #self.pub_rc3 = rospy.Publisher('/BlueRov2/rc_channel3/set_pwm', UInt16, queue_size=10)
 
@@ -21,12 +22,10 @@ class Depth_Control():
         rospy.Subscriber('/BlueRov2/bar30', Bar30, self._callback_bar30)
 
         self.rate = rospy.Rate(rosrate)
-        self.logs_depthControl = open("logs_depthControl.txt", 'a')
         self.depth_desired = depth_desired
         self.bar30_data = [0, 0, 0, 0] # [time_boot_ms, press_abs, press_diff, temperature]
         self.pwm_max = pwm_max
         self.pwm_neutral = pwm_neutral
-        self.K = K #for the proportionnal controller
         self.KI = K
         self.KP = K
         self.KD = K
@@ -36,7 +35,8 @@ class Depth_Control():
         self.I_depth = 0
         
         rospy.Subscriber('/Settings/set_depth', Set_depth, self._callback_set_depth)
-        
+        rospy.Subscriber('/Settings/set_attitude', Set_attitude, self._callback_set_attitude)
+
     def _callback_bar30(self, msg):
 	    self.bar30_data = [ msg.time_boot_ms,
         	                msg.press_abs,
@@ -44,20 +44,13 @@ class Depth_Control():
         	                msg.temperature ]
         	                
     def _callback_set_depth(self, msg):
-        self.depth_desired = msg.depth_desired
         self.pwm_max = msg.pwm_max
-        self.pwm_neutral = msg.pwm_neutral
-        self.K = msg.K 
         self.KI = msg.KI 
         self.KP = msg.KP 
         self.KD = msg.KD 
-        self.rosrate = msg.rosrate
 
-    def control(self, p):
-        depth  = -(p-p0)/(rho*g)
-        #print("Real Depth :",depth  )
-        u = self.K*(self.depth_desired-depth)
-        return u
+    def _callback_set_attitude(self, msg):
+        self.depth_desired = msg.depth_desired
 
     def control_pid(self, p):
         depth  = -(p-p0)/(rho*g)
@@ -73,8 +66,6 @@ class Depth_Control():
 
         self.I_depth = (self.depth_desired-depth)*delta_t
         u = self.KI*self.I_depth + self.KP*(self.depth_desired-depth) - self.KD*D_depth
-        print( "depth :",self.KI*self.I_depth , self.KP*(self.depth_desired-depth) , self.KD*D_depth)
-        self.logs_depthControl.write("depth,depth_desired,ki,kp,kd;{}, {}, {}, {}, {} ".format( depth, self.depth_desired,self.KI,self.KP,self.KD ))
         return u
 	
     def saturation(self, pwm):
@@ -86,16 +77,13 @@ class Depth_Control():
 	    return int(pwm)
 
     def main(self):
-	    #pub_arm.publish(1)
-        #self.logs_depthControl.write("bar30_data :{} \n".format(self.bar30_data[1]))
+        #pub_arm.publish(1)
         mesured_pressure = self.bar30_data[1]*100 #to convert pressure from hPa to Pa
         u = self.control_pid(mesured_pressure)
         pwm = 1500 + u
-        #self.logs_depthControl.write("pwm  :{} \n".format(pwm))
-        #print(bar30_data[1],pwm) 
         pwm = self.saturation(pwm)
-	    #pub_rc3.publish(pwm)
-        #print("order_depth : {}, pwm : {},mesured_pressure : {} ".format(u,pwm, mesured_pressure))
+        #pub_rc3.publish(pwm)
+        print("DESIRED_DEPTH : {}, PRESSURE_MESURED : {}, PWM : {}".format(self.depth_desired, mesured_pressure, pwm))
         self.pub_pwm.publish(pwm)
 
 if __name__ == "__main__":

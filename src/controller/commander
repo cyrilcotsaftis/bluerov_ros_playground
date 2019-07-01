@@ -32,8 +32,8 @@ class Commander():
         self.pwm_heading = 0
         
         self.override_controller = 1 # 0:automatic control, 1:gamepad control
-        self.gamepad_axes = [self.pwm_neutral, self.pwm_neutral, self.pwm_neutral, self.pwm_neutral] # THROTTLE,YAW,FORWARD
-        self.gamepad_buttons = [0,0,0,0,0, 1100] # ARM, OVERRIDE_CONTROLLER
+        self.gamepad_axes = [self.pwm_neutral, self.pwm_neutral, self.pwm_neutral, self.pwm_neutral] # THROTTLE,YAW,FORWARD, LATERAL
+        self.gamepad_buttons = [0,0,0,0,0, 1100] # ARM, OVERRIDE_CONTROLLER, LIGHT_DEC, LIGHT_INC, PWM_LIGHT
 
     def _callback_depth(self,msg):
         self.pwm_depth = msg.data
