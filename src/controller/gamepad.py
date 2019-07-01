@@ -69,7 +69,9 @@ class Gamepad():
             'BTN_BASE3': self._disarm, # id Ardusub : 4, BACK [0;1]
             'BTN_BASE4': self._arm, # id Ardusub : 6, START [0;1]
             }
-
+        self.msg_header()
+        self.pub.publish(self.msg)
+        print('TOTO')
     def _arm_callback(self, msg):
         self.armed = msg.data
         print('ARM ', self.armed)    
@@ -186,12 +188,12 @@ class Gamepad():
         print("LIST_BUTTONS_CLICKED : {}".format(self.list_buttons_clicked))
         self.msg_header()
         self.pub.publish(self.msg)
-
+ 
 if __name__ == "__main__":
     rospy.init_node('Gamepad', anonymous=True)
 
     gamepad = Gamepad()
 
     while not rospy.is_shutdown():
-        gamepad.publish()
+       gamepad.publish()
 
