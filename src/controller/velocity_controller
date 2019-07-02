@@ -6,7 +6,7 @@ from std_msgs.msg import UInt16
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
 from bluerov_ros_playground.msg import Set_velocity
-from bluerov_ros_playground.msg import Set_attitude
+from bluerov_ros_playground.msg import Set_target
 
 class Velocity_Control():
     def __init__(self, velocity_desired=1, pwm_max=1550, pwm_neutral=1500, KP=100, KD=25, rosrate=6):
@@ -28,7 +28,7 @@ class Velocity_Control():
         self.N = 20
     
         rospy.Subscriber('/Settings/set_velocity', Set_velocity, self._callback_set_vel)
-        rospy.Subscriber('/Settings/set_attitude', Set_attitude, self._callback_set_attitude)
+        rospy.Subscriber('/Settings/set_target', Set_target, self._callback_set_target)
         
     def _callback_imu_data(self, msg):
         self.imu_data = [msg.linear_acceleration.x,
@@ -42,11 +42,14 @@ class Velocity_Control():
 
         	                
     def _callback_set_vel(self, msg):
-        self.pwm_max = msg.pwm_max
+        if msg.pwm_max < 1500:
+            self.pwm_max = 1500
+        else:
+            self.pwm_max = msg.pwm_max
         self.KP = msg.KP 
         self.KD = msg.KD 
 
-    def _callback_set_attitude(self, msg):
+    def _callback_set_target(self, msg):
         self.velocity_desired = msg.velocity_desired
 
 

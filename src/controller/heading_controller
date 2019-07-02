@@ -8,7 +8,7 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
 from bluerov_ros_playground.msg import Attitude
 from bluerov_ros_playground.msg import Set_heading
-from bluerov_ros_playground.msg import Set_attitude
+from bluerov_ros_playground.msg import Set_target
 
 PI = np.pi
 
@@ -29,7 +29,7 @@ class Heading_Controller():
         self.KD = KD
 
         rospy.Subscriber('/Settings/set_heading', Set_heading, self._callback_set_heading)
-        rospy.Subscriber('/Settings/set_attitude', Set_attitude, self._callback_set_attitude)
+        rospy.Subscriber('/Settings/set_target', Set_target, self._callback_set_target)
         
     def sawtooth (self, x):
         """to deal with 2*PI modulo"""
@@ -44,11 +44,14 @@ class Heading_Controller():
                          msg.yawspeed]
                    
     def _callback_set_heading(self, msg):
-        self.pwm_max = msg.pwm_max
+        if msg.pwm_max < 1500:
+            self.pwm_max = 1500
+        else:
+            self.pwm_max = msg.pwm_max
         self.KP = msg.KP 
         self.KD = msg.KD 
 
-    def _callback_set_attitude(self, msg):
+    def _callback_set_target(self, msg):
         self.heading_desired = msg.heading_desired
 
     def control(self, yaw, yawspeed):

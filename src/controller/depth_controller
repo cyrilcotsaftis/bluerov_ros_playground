@@ -6,7 +6,7 @@ from std_msgs.msg import UInt16
 from std_msgs.msg import Bool
 from bluerov_ros_playground.msg import Bar30
 from bluerov_ros_playground.msg import Set_depth
-from bluerov_ros_playground.msg import Set_attitude
+from bluerov_ros_playground.msg import Set_target
 #axis z goes up
 
 g = 9.81  # m.s^-2 gravitationnal acceleration 
@@ -26,16 +26,16 @@ class Depth_Control():
         self.bar30_data = [0, 0, 0, 0] # [time_boot_ms, press_abs, press_diff, temperature]
         self.pwm_max = pwm_max
         self.pwm_neutral = pwm_neutral
-        self.KI = K
-        self.KP = K
-        self.KD = K
+        self.KI = 100
+        self.KP = 600
+        self.KD = 50
 
         self.time = 0
         self.depth = 0
         self.I_depth = 0
         
         rospy.Subscriber('/Settings/set_depth', Set_depth, self._callback_set_depth)
-        rospy.Subscriber('/Settings/set_attitude', Set_attitude, self._callback_set_attitude)
+        rospy.Subscriber('/Settings/set_target', Set_target, self._callback_set_target)
 
     def _callback_bar30(self, msg):
 	    self.bar30_data = [ msg.time_boot_ms,
@@ -44,12 +44,15 @@ class Depth_Control():
         	                msg.temperature ]
         	                
     def _callback_set_depth(self, msg):
-        self.pwm_max = msg.pwm_max
+        if msg.pwm_max < 1500:
+            self.pwm_max = 1500
+        else:
+            self.pwm_max = msg.pwm_max
         self.KI = msg.KI 
         self.KP = msg.KP 
         self.KD = msg.KD 
 
-    def _callback_set_attitude(self, msg):
+    def _callback_set_target(self, msg):
         self.depth_desired = msg.depth_desired
 
     def control_pid(self, p):
