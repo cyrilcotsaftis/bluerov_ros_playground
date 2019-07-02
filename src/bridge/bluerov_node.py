@@ -35,6 +35,7 @@ from std_msgs.msg import UInt16
 from sensor_msgs.msg import Joy
 from bluerov_ros_playground.msg import Bar30
 from bluerov_ros_playground.msg import Attitude 
+from bluerov_ros_playground.msg import State 
 
 class BlueRov(Bridge):
     def __init__(self, device='udp:192.168.2.1:14550', baudrate=115200):
@@ -69,7 +70,7 @@ class BlueRov(Bridge):
             [
                 self._create_ROV_state,
                 '/state',
-                String,
+                State,
                 1
             ],
             [
@@ -96,7 +97,6 @@ class BlueRov(Bridge):
                 Attitude,
                 1
             ]
-
         ]
 
         self.sub_topics= [
@@ -502,6 +502,7 @@ class BlueRov(Bridge):
         self._create_header(msg)
         msg.step = int(msg.step)
         self.pub.set_data('/camera/image_raw', msg)
+    
 
     def _create_ROV_state(self):
         """ Create ROV state message from ROV data
@@ -539,18 +540,19 @@ class BlueRov(Bridge):
 
         mode, arm = self.decode_mode(base_mode, custom_mode)
 
-        state = {
-            'motor': motor_throttle,
-            'light': light_on,
-            'camera_angle': camera_angle,
-            'mode': mode,
-            'arm': arm
-        }
-
-        string = String()
-        string.data = str(json.dumps(state, ensure_ascii=False))
-
-        self.pub.set_data('/state', string)
+        data = State()
+        data.arm = arm
+        data.rc1 = motor_throttle[0]
+        data.rc2 = motor_throttle[1]
+        data.rc3 = motor_throttle[2]
+        data.rc4 = motor_throttle[3]
+        data.rc5 = motor_throttle[4]
+        data.rc6 = motor_throttle[5]
+        data.light = light_on
+        data.camera = camera_angle
+        data.mode = mode
+        
+        self.pub.set_data('/state', data)
 
     def publish(self):
         """ Publish the data in ROS topics
