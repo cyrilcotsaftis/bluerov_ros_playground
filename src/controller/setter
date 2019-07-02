@@ -4,7 +4,7 @@ import rospy
 from bluerov_ros_playground.msg import Set_depth
 from bluerov_ros_playground.msg import Set_heading
 from bluerov_ros_playground.msg import Set_velocity
-from bluerov_ros_playground.msg import Set_attitude
+from bluerov_ros_playground.msg import Set_target
 
 
 def set_msg_depth(pwm_max, KI, KP, KD):
@@ -42,15 +42,15 @@ if __name__ == "__main__":
 	pub_depth = rospy.Publisher('/Settings/set_depth', Set_depth, queue_size=10)
 	pub_heading = rospy.Publisher('/Settings/set_heading', Set_heading, queue_size=10)
 	pub_velocity = rospy.Publisher('/Settings/set_velocity', Set_velocity, queue_size=10)
-        pub_attitude = rospy.Publisher('/Settings/set_attitude', Set_attitude, queue_size=10)
+        pub_target = rospy.Publisher('/Settings/set_target', Set_target, queue_size=10)
 
 	msg_depth = set_msg_depth(1650,  100, 600, 50)
 	msg_heading = set_msg_heading(1550,  35, 25)
 	msg_velocity = set_msg_velocity(1550,  100, 25)
-        msg_attitude = set_msg_attitude(-0.2,  2.96,  1.)
+        msg_target = set_msg_target(-0.2,  2.96,  1.)
 	while not rospy.is_shutdown():
 		pub_depth.publish(msg_depth)
 		pub_heading.publish(msg_heading)
 		pub_velocity.publish(msg_velocity)
-		pub_attitude.publish(msg_attitude)
+		pub_target.publish(msg_target)
 		rate.sleep()
