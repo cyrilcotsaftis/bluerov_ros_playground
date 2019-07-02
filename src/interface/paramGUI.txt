@@ -7,18 +7,21 @@ Text browser :
 	
 	CONTROLLER OVERVIEW :
 	depth_measured_display
+	depth_target_display
 	depth_controller_pwm_display
 	depth_controller_KI_display
 	depth_controller_KP_display
 	depth_controller_KD_display
 
 	heading_measured_display
+	heading_target_display
 	heading_controller_pwm_display
 	heading_controller_KI_display
 	heading_controller_KP_display
 	heading_controller_KD_display
 
 	velocity_measured_display
+	velocity_target_display
 	velocity_controller_pwm_display
 	velocity_controller_KI_display
 	velocity_controller_KP_display
@@ -56,5 +59,5 @@ pushButton :
 	pushButton_send_parameters_depth
 	pushButton_send_parameters_heading
 	pushButton_send_parameters_velocity
-	pushButton_send_parameters_attitude
- 
+	pushButton_send_parameters_target
+	pushButton_send_pwm_max 

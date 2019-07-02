@@ -9,41 +9,53 @@ from sensor_msgs.msg import Joy
 from bluerov_ros_playground.msg import Set_velocity 
 from bluerov_ros_playground.msg import Set_heading 
 from bluerov_ros_playground.msg import Set_depth
-from bluerov_ros_playground.msg import Set_attitude
+from bluerov_ros_playground.msg import Set_target
+from bluerov_ros_playground.msg import Bar30
+from bluerov_ros_playground.msg import Attitude
 
 PATH = "/home/nathan/ROS_bluerov2_ws/src/bluerov_ros_playground/bluerov_ros/src/interface/"
+g = 9.81  # m.s^-2 gravitationnal acceleration  
+p0 = 990*100 #Pa surface pressure NEED to be cheked    
+rho = 1000 # kg.m^3  water density
 
 class Display(QtWidgets.QMainWindow):
 
     def _depth_param_clicked(self):
-        self.depth_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value()
         self.depth_ctrl_msgToSend.KI = self.spinBox_KI_depth.value()
         self.depth_ctrl_msgToSend.KP = self.spinBox_KP_depth.value()
         self.depth_ctrl_msgToSend.KD = self.spinBox_KD_depth.value()
-        self.pub_set_depth.publish(self.depth_ctrl_msgToSend)
+
 
         
     def _heading_param_clicked(self):
-        self.heading_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value()
         #self.heading_ctrl_msgToSend.KI = self.spinBox_KI_heading.value()
         self.heading_ctrl_msgToSend.KP = self.spinBox_KP_heading.value()
         self.heading_ctrl_msgToSend.KD = self.spinBox_KD_heading.value()
-        self.pub_set_heading.publish(self.heading_ctrl_msgToSend)
+
 
 
     def _velocity_param_clicked(self):
-        self.velocity_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value()
         #self.velocity_ctrl_msgToSend.KI = self.spinBox_KI_velocity.value()
         self.velocity_ctrl_msgToSend.KP = self.spinBox__KP_velocity.value()
         self.velocity_ctrl_msgToSend.KD = self.spinBox_KD_velocity.value()
-        self.pub_set_velocity.publish(self.velocity_ctrl_msgToSend)
 
-    def _attitude_param_clicked(self):
-        self.attitude_ctrl_msgToSend.depth_desired = self.doubleSpinBox_depth.value()
-        self.attitude_ctrl_msgToSend.heading_desired = self.doubleSpinBox_heading.value()
-        self.attitude_ctrl_msgToSend.velocity_desired = self.doubleSpinBox_velocity.value()
-        self.pub_set_attitude.publish(self.attitude_ctrl_msgToSend)
 
+    def _target_param_clicked(self):
+        self.target_ctrl_msgToSend.depth_desired = - self.doubleSpinBox_depth.value()#because in depht_controller, depth desired = altitude ( so -XX to go under the surface)
+        self.target_ctrl_msgToSend.heading_desired = self.doubleSpinBox_heading.value()
+        self.target_ctrl_msgToSend.velocity_desired = self.doubleSpinBox_velocity.value()
+
+    def _pwm_max_clicked(self):
+        self.depth_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value() 
+        self.heading_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value()
+        self.velocity_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value()
+
+    def _activate_depth_ctrl_checked(self):
+        self.depth_ctrl_msgToSend.enable_depth_ctrl = self.checkBox_activate_depth_controller.isChecked()
+    def _activate_headind_ctrl_checked(self):
+        self.heading_ctrl_msgToSend.enable_heading_ctrl = self.checkBox_activate_heading_controller.isChecked()
+    def _activate_velocity_ctrl_checked(self):
+        self.velocity_ctrl_msgToSend.enable_velocity_ctrl = self.checkBox_activate_velocity_controller.isChecked()
 
     def __init__(self):
         super(Display, self).__init__()
@@ -53,7 +65,7 @@ class Display(QtWidgets.QMainWindow):
         self.pub_set_heading = rospy.Publisher('/Settings/set_heading', Set_heading, queue_size = 10)
         self.pub_set_depth = rospy.Publisher('/Settings/set_depth', Set_depth, queue_size=10)
         self.pub_set_velocity = rospy.Publisher('/Settings/set_velocity', Set_velocity, queue_size=10)
-        self.pub_set_attitude = rospy.Publisher('/Settings/set_attitude', Set_attitude, queue_size=10)
+        self.pub_set_target = rospy.Publisher('/Settings/set_target', Set_target, queue_size=10)
         rospy.Subscriber('/BlueRov2/arm', Bool, self._arm_callback) 
         rospy.Subscriber('/BlueRov2/battery', BatteryState, self._battery_callback)
 
@@ -65,15 +77,24 @@ class Display(QtWidgets.QMainWindow):
         rospy.Subscriber('/Settings/set_depth', Set_depth, self._settings_depth_ctrl_callback)
         rospy.Subscriber('/Settings/set_heading', Set_heading, self._settings_heading_ctrl_callback)
         rospy.Subscriber('/Settings/set_velocity', Set_velocity, self._settings_velocity_ctrl_callback)
-        
+    
+        rospy.Subscriber('/Settings/set_target', Set_target, self._settings_target_callback)
+        rospy.Subscriber('/BlueRov2/bar30', Bar30, self._bar30_callback)
+        rospy.Subscriber('/BlueRov2/imu/attitude', Attitude, self._callback_attitude)  
+
         self.pushButton_send_parameters_heading.clicked.connect(self._heading_param_clicked)
         self.pushButton_send_parameters_velocity.clicked.connect(self._velocity_param_clicked)
         self.pushButton_send_parameters_depth.clicked.connect(self._depth_param_clicked)
-        self.pushButton_send_parameters_attitude.clicked.connect(self._attitude_param_clicked)
+        self.pushButton_send_parameters_target.clicked.connect(self._target_param_clicked)
+        self.pushButton_send_pwm_max.clicked.connect(self._pwm_max_clicked)
+        self.checkBox_activate_depth_controller.clicked.connect(self._activate_depth_ctrl_checked)
+        self.checkBox_activate_heading_controller.clicked.connect(self._activate_headind_ctrl_checked)
+        self.checkBox_activate_velocity_controller.clicked.connect(self._activate_velocity_ctrl_checked)
+
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.display)
-        self.timer.start(500)
+        self.timer.start(250)
         
         self.arm = False    
         self.battery = None
@@ -85,15 +106,29 @@ class Display(QtWidgets.QMainWindow):
         self.gamepad_axes = None
         self.gamepad_buttons = None
         self.override_controller = None
-    
+        self.bar30_pressure_measured = 1015 
+        self.heading_measured = None
+
         self.heading_ctrl_param_rcv = Set_heading() #depth_desired, pwm_max, pwm_neutral, K, KI, KP, KD, rosrate
         self.depth_ctrl_param_rcv = Set_depth() #heading_desired, KP, KD, pwm_max, pwm_neutral, rosrate
         self.velocity_ctrl_param_rcv = Set_velocity()#velocity_desired, pwm_max, pwm_neutral, KP, KD, rosrate
+        self.target_rcv = Set_target()
 
         self.heading_ctrl_msgToSend = Set_heading() 
         self.depth_ctrl_msgToSend = Set_depth()
         self.velocity_ctrl_msgToSend = Set_velocity()
-        self.attitude_ctrl_msgToSend = Set_attitude()
+        self.target_ctrl_msgToSend = Set_target()
+        
+
+        #INITIALISATION de L'AFFICHAGE
+        self.init()
+
+    def init(self):
+        self._depth_param_clicked()
+        self._heading_param_clicked()
+        self._velocity_param_clicked()
+        self._target_param_clicked()
+
     def _arm_callback(self,msg):
         self.arm = msg.data
 
@@ -125,8 +160,15 @@ class Display(QtWidgets.QMainWindow):
     def _settings_velocity_ctrl_callback(self,msg):
         #velocity_desired, pwm_max, pwm_neutral, KP, KD, rosrate
         self.velocity_ctrl_param_rcv = msg
-
     
+    def _settings_target_callback(self, msg):
+        self.target_rcv = msg
+
+    def _bar30_callback(self,msg):
+        self.bar30_pressure_measured = msg.press_abs
+    def _callback_attitude(self, msg):
+        self.heading_measured = msg.yaw
+
     def display(self):
         #STATUS section :
         if self.arm:
@@ -144,25 +186,34 @@ class Display(QtWidgets.QMainWindow):
 	#self.light_level_display 
         
                 #CONTROLLER OVERVIEW :
-        self.depth_measured_display.display(-1)
+        depth = -(self.bar30_pressure_measured-p0)/(rho*g)
+        self.depth_measured_display.display(depth)
         self.depth_controller_pwm_display.display(self.pwm_depth)
+        self.depth_target_display.display(self.target_rcv.depth_desired)
         self.depth_controller_KI_display.display(self.depth_ctrl_param_rcv.KI)
         self.depth_controller_KP_display.display(self.depth_ctrl_param_rcv.KP)
         self.depth_controller_KD_display.display(self.depth_ctrl_param_rcv.KD)
         
 
-        self.heading_measured_display
+        self.heading_measured_display.display(self.heading_measured)
+        self.heading_target_display.display(self.target_rcv.heading_desired)
         self.heading_controller_pwm_display.display(self.pwm_heading)
-        self.heading_controller_KI_display.display(self.heading_ctrl_param_rcv.KP)
-        self.heading_controller_KP_display
+        self.heading_controller_KI_display
+        self.heading_controller_KP_display.display(self.heading_ctrl_param_rcv.KP)
         self.heading_controller_KD_display.display(self.heading_ctrl_param_rcv.KD)
 
-        self.velocity_measured_display
-        self.velocity_controller_pwm_display.display('{}'.format(self.pwm_forward))
+        self.velocity_measured_display.display(-1)
+        self.velocity_target_display.display(self.target_rcv.velocity_desired)
+        self.velocity_controller_pwm_display.display(self.pwm_forward)
         self.velocity_controller_KI_display
         self.velocity_controller_KP_display.display(self.velocity_ctrl_param_rcv.KP)
         self.velocity_controller_KD_display.display(self.velocity_ctrl_param_rcv.KD)
-    
+        
+        
+        self.pub_set_velocity.publish(self.velocity_ctrl_msgToSend)
+        self.pub_set_heading.publish(self.heading_ctrl_msgToSend)
+        self.pub_set_target.publish(self.target_ctrl_msgToSend)
+        self.pub_set_depth.publish(self.depth_ctrl_msgToSend)
 
 if __name__ == "__main__":
     rospy.init_node('GUI', anonymous =True)
