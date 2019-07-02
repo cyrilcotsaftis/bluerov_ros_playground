@@ -55,7 +55,8 @@ add_message_files(
 	Set_depth.msg
 	Set_heading.msg
 	Set_velocity.msg
-	Set_attitude.msg
+	Set_target.msg
+	State.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -222,8 +223,7 @@ catkin_install_python(PROGRAMS
   src/controller/setter
   src/controller/imu_kalman
   src/controller/gamepad.py
-  src/interface/interface.py
-  src/interface/gestionInterface.py
+  src/interface/gui.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 
 )
