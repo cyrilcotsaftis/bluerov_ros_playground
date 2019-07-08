@@ -11,18 +11,28 @@ AccX_Value = 0
 AccX_Variance = 0.05
 rosrate = 6.
 
-def _callback_imu_data(msg):
-  global AccX_Value
-  AccX_Value = msg.linear_acceleration.x
-
 rospy.init_node('imu_kalman', anonymous=True)
 rospy.Subscriber('/BlueRov2/imu/data', Imu, _callback_imu_data)
+rospy.Subscriber('/BlueRov2/imu/imu1', Imu, _callback_imu_1)
+rospy.Subscriber('/BlueRov2/imu/imu2', Imu, _callback_imu_2)
 rate = rospy.Rate(rosrate)
 
+def _callback_imu_data(msg):
+  global AccX_ValueData
+  AccX_ValueData = msg.linear_acceleration.x
 
+def _callback_imu_1(msg):
+  global AccX_ValueImu1
+  AccX_ValueImu1 = msg.linear_acceleration.x
+  
+def _callback_imu_2(msg):
+  global AccX_ValueImu2
+  AccX_ValueImu2 = msg.linear_acceleration.x
+
+AccX_Value = (AccX_ValueData+AccX_ValueImu1+AccX_ValueImu2)/3
 
 # time step
-dt = 1/rosrate
+dt = 1/100.
 
 # transition_matrix  
 F = [[1, dt, 0.5*dt**2], 
