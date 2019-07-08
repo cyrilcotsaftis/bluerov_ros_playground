@@ -3,9 +3,9 @@
 
 import socket
 import time
-import rospy
+#import rospy
 import json
-from sensor_msgs.msg import Imu
+#from sensor_msgs.msg import Imu
 
 class Imu_bridge:
     def __init__(self, host="192.168.2.2",port=14600):
@@ -14,8 +14,8 @@ class Imu_bridge:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connection()
         
-        self.pub_imu1 = rospy.Publisher('/BlueRov2/imu/imu1', Imu, queue_size=10)
-        self.pub_imu2 = rospy.Publisher('/BlueRov2/imu/imu2', Imu, queue_size=10)
+#        self.pub_imu1 = rospy.Publisher('/BlueRov2/imu/imu1', Imu, queue_size=10)
+#        self.pub_imu2 = rospy.Publisher('/BlueRov2/imu/imu2', Imu, queue_size=10)
 
         #connection to the serveur
     def connection(self):
@@ -36,13 +36,13 @@ class Imu_bridge:
    
     def publish(self,data):
         print(data)
-        msg_imu1 = Imu()
-        msg_imu2 = Imu()
+#        msg_imu1 = Imu()
+#        msg_imu2 = Imu()
          #TODO : traitement des donnees recus pour les publier ROS
-        msg_imu1.test = 0
-        print(data)
-        self.pub_imu1.publish(msg_imu1)
-        self.pub_imu2.publish(msg_imu2)
+#        msg_imu1.test = 0
+#        print(data)
+#        self.pub_imu1.publish(msg_imu1)
+#        self.pub_imu2.publish(msg_imu2)
     
     def main(self):
         while True:
@@ -52,7 +52,7 @@ class Imu_bridge:
             time.sleep(0.5)
 
 if __name__=="__main__":
-    rospy.init_node('imu__', anonymous=True)
+#    rospy.init_node('imu__', anonymous=True)
     bridge = Imu_bridge()
     bridge.main()
     bridge.socket.close()
