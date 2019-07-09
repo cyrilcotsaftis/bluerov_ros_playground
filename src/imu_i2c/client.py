@@ -33,49 +33,63 @@ class Imu_bridge:
     def recv(self):
         b_data =  self.socket.recv(1024) #1024 characters
         s_data = b_data.decode("utf8")
-        return json.loads(s_data)
-        
-        
+        return json.loads(s_data)      
         
     def publish(self,data):
         print(data)
-        msg_imu1 = self._create_msg(data,"IMU1")
-        msg_imu2 = self._create_msg(data,"IMU2")
+        msg_imu1, msg_imu2 = self._create_msg(data)
         self.pub_imu1.publish(msg_imu1)
         self.pub_imu2.publish(msg_imu2)
         
-    def _create_msg(self,data,imu):
-        #IMU1, 2
+    def _create_msg(self,data):
+
+        msg1 = Imu()
+     
+        msg1.header.stamp = rospy.Time.now()
+        msg1.header.frame_id = '/base_link1'
         
-        #accel_x ,y, z
-        #gyro_x ,y, z
-        #mag_x, y, z
-        msg = Imu()
+        msg1.linear_acceleration.x = data["IMU1"]["accel_y"]
+        msg1.linear_acceleration.y = data["IMU1"]["accel_z"]
+        msg1.linear_acceleration.z = data["IMU1"]["accel_x"]
+        msg1.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
-        msg.header.stamp = rospy.Time.now()
-        msg.header.frame_id = '/base_link'
+        msg1.angular_velocity.x = data["IMU1"]["gyro_y"]
+        msg1.angular_velocity.y = data["IMU1"]["gyro_z"]
+        msg1.angular_velocity.z = data["IMU1"]["gyro_x"]
+        msg1.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
-        msg.linear_acceleration.x = data[imu]["accel_x"]
-        msg.linear_acceleration.y = data[imu]["accel_y"]
-        msg.linear_acceleration.z = data[imu]["accel_z"]
-        msg.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        msg1.orientation.w = 0
+        msg1.orientation.x = 0
+        msg1.orientation.y = 0
+        msg1.orientation.z = 0
+        msg1.orientation_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
-        msg.angular_velocity.x = data[imu]["gyro_x"]
-        msg.angular_velocity.y = data[imu]["gyro_y"]
-        msg.angular_velocity.z = data[imu]["gyro_z"]
-        msg.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
-        msg.orientation.w = 0
-        msg.orientation.x = 0
-        msg.orientation.y = 0
-        msg.orientation.z = 0
-        msg.orientation_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        msg2 = Imu()
+     
+        msg2.header.stamp = rospy.Time.now()
+        msg2.header.frame_id = '/base_link2'
         
+        msg2.linear_acceleration.x = -data["IMU2"]["accel_y"]
+        msg2.linear_acceleration.y = -data["IMU2"]["accel_z"]
+        msg2.linear_acceleration.z = data["IMU2"]["accel_x"]
+        msg2.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
+        msg2.angular_velocity.x = -data["IMU2"]["gyro_y"]
+        msg2.angular_velocity.y = -data["IMU2"]["gyro_z"]
+        msg2.angular_velocity.z = data["IMU2"]["gyro_x"]
+        msg2.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
+        msg2.orientation.w = 0
+        msg2.orientation.x = 0
+        msg2.orientation.y = 0
+        msg2.orientation.z = 0
+        msg2.orientation_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         #data[imu][mag_x]
         #data[imu][mag_y]
         #data[imu][mag_z]
         
-        return msg
+        return msg1, msg2
    
 
     
