@@ -123,10 +123,10 @@ if __name__ == "__main__":
 	rospy.init_node('imu_kalman', anonymous=True)
 	imu_kalman = Imu_Kalman()
 #	while not rospy.is_shutdown():
-        file_data = open("data_imu_forward.csv", "w")
+        file_data = open("data_imu_forward3.csv", "w")
         file_data.write("IMU1, IMU2, MEAN, ESTIMATED, EFK_speed, EFK_pos\n")
         t0 = time.time()
-	while time.time()-t0<10:
+	while time.time()-t0<40:
 		imu_kalman.kalman_update()
 		file_data.write("{}, {}, {}, {}, {}, {}\n".format(imu_kalman.acc_imu1[0], imu_kalman.acc_imu2[0], imu_kalman.accX_mean, imu_kalman.filtered_state_means[1, 2],imu_kalman.filtered_state_means[1, 1], imu_kalman.filtered_state_means[1, 0]))
                 print(time.time()-t0)
