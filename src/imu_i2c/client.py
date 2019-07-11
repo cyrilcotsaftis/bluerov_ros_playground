@@ -48,13 +48,13 @@ class Imu_bridge:
         msg1.header.stamp = rospy.Time.now()
         msg1.header.frame_id = '/base_link1'
         
-        msg1.linear_acceleration.x = data["IMU1"]["accel_y"]
-        msg1.linear_acceleration.y = data["IMU1"]["accel_z"]
+        msg1.linear_acceleration.x = -data["IMU1"]["accel_y"]
+        msg1.linear_acceleration.y = -data["IMU1"]["accel_z"]
         msg1.linear_acceleration.z = data["IMU1"]["accel_x"]
         msg1.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
-        msg1.angular_velocity.x = data["IMU1"]["gyro_y"]
-        msg1.angular_velocity.y = data["IMU1"]["gyro_z"]
+        msg1.angular_velocity.x = -data["IMU1"]["gyro_y"]
+        msg1.angular_velocity.y = -data["IMU1"]["gyro_z"]
         msg1.angular_velocity.z = data["IMU1"]["gyro_x"]
         msg1.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
@@ -70,13 +70,13 @@ class Imu_bridge:
         msg2.header.stamp = rospy.Time.now()
         msg2.header.frame_id = '/base_link2'
         
-        msg2.linear_acceleration.x = -data["IMU2"]["accel_y"]
-        msg2.linear_acceleration.y = -data["IMU2"]["accel_z"]
+        msg2.linear_acceleration.x = data["IMU2"]["accel_y"]
+        msg2.linear_acceleration.y = data["IMU2"]["accel_z"]
         msg2.linear_acceleration.z = data["IMU2"]["accel_x"]
         msg2.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
-        msg2.angular_velocity.x = -data["IMU2"]["gyro_y"]
-        msg2.angular_velocity.y = -data["IMU2"]["gyro_z"]
+        msg2.angular_velocity.x = data["IMU2"]["gyro_y"]
+        msg2.angular_velocity.y = data["IMU2"]["gyro_z"]
         msg2.angular_velocity.z = data["IMU2"]["gyro_x"]
         msg2.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
