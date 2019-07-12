@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from pykalman import KalmanFilter
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +7,7 @@ import time
 import rospy
 from sensor_msgs.msg import Imu
 
-AccX_Variance = 0.05**2
+AccX_Variance = 1.5*1e-4
 
 class Imu_Kalman():
 
@@ -20,6 +19,7 @@ class Imu_Kalman():
 		self.rosrate = 100
 		self.rate = rospy.Rate(self.rosrate)
 
+                self.t0 = time.time()
 		self.orientation = [0,0,0,0]
 		self.acc_imu1 = [0,0,0]
 		self.acc_imu2 = [0,0,0]
@@ -81,12 +81,16 @@ class Imu_Kalman():
 
 
 	def _callback_imu_1(self, msg):
-		self.acc_imu1 = [msg.linear_acceleration.x,
+                #moy : sur 40s 0.41110448395365074
+                #moy : sur 3600s 0.35930319258263654
+		self.acc_imu1 = [msg.linear_acceleration.x-0.35930319258263654,
 						msg.linear_acceleration.y,
 						msg.linear_acceleration.z]
 
 	def _callback_imu_2(self, msg):
-		self.acc_imu2 = [msg.linear_acceleration.x,
+                #moy : 0.27067840479669764
+                #moy : sur 3600s  0.23206011098693963
+		self.acc_imu2 = [msg.linear_acceleration.x-0.23206011098693963,
 						msg.linear_acceleration.y,
 						msg.linear_acceleration.z]
 
@@ -102,8 +106,8 @@ class Imu_Kalman():
 	
 	# get expected direction of gravity
 		g[0] = 2 * (q[1] * q[3] - q[0] * q[2])
-		g[1] = -2 * (q[0] * q[1] + q[2] * q[3])
-		g[2] = -(q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3])
+		g[1] = 2 * (q[0] * q[1] + q[2] * q[3])
+		g[2] = (q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3])
 	
 	# compensate accelerometer readings with the expected direction of gravity
 
@@ -126,27 +130,34 @@ class Imu_Kalman():
 			)
 		self.filtered_state_means[0] = self.filtered_state_means[1]
 		self.filtered_state_covariances[0] = self.filtered_state_covariances[1]
-	
+
+
+        def correct_velocity_drift(self):
+            t = time.time()-self.t0
+# offset :  0.0779872161739863 inutile normalement)
+            return self.filtered_state_means[1, 1]-(-0.004093146960597331*t)
 
 
 if __name__ == "__main__":
 	rospy.init_node('imu_kalman', anonymous=True)
 	imu_kalman = Imu_Kalman()
 #	while not rospy.is_shutdown():
-        file_data = open("data_imu_forward3.csv", "w")
-        file_data.write("IMU1, IMU2, MEAN, ESTIMATED, EFK_speed, EFK_pos\n")
+        file_data = open("data_imu_15.csv", "w")
+        #file_data.write("IMU1, IMU2, MEAN, ESTIMATED, EFK_speed, EKF_speed_corrected, EFK_pos\n")
         t0 = time.time()
 	while time.time()-t0<40:
 		imu_kalman.kalman_update()
-		file_data.write("{}, {}, {}, {}, {}, {}\n".format(imu_kalman.acc_imu1[0], imu_kalman.acc_imu2[0], imu_kalman.accX_mean, imu_kalman.filtered_state_means[1, 2],imu_kalman.filtered_state_means[1, 1], imu_kalman.filtered_state_means[1, 0]))
-        print(time.time()-t0)
-		print("AccX_Value", imu_kalman.acc_mean[0])
+		#file_data.write("{}, {}, {}, {}, {}, {}\n".format(imu_kalman.acc_imu1[0], imu_kalman.acc_imu2[0], imu_kalman.accX_mean, imu_kalman.filtered_state_means[1, 2],imu_kalman.filtered_state_means[1, 1], imu_kalman.filtered_state_means[1, 0]))
+		file_data.write("{}, {}, {}, {}, {}, {}, {}\n".format(imu_kalman.acc_imu1[0], imu_kalman.acc_imu2[0], imu_kalman.accX_mean, imu_kalman.filtered_state_means[1, 2], imu_kalman.filtered_state_means[1, 1], imu_kalman.correct_velocity_drift(), imu_kalman.filtered_state_means[1, 0]))
+                print(time.time()-t0)
+		print("AccX_Value", imu_kalman.accX_mean)
 		print("AccX_estimated", imu_kalman.filtered_state_means[1, 2])
 		print("VelX_estimated", imu_kalman.filtered_state_means[1, 1])
+		print("VelX_estimated", imu_kalman.correct_velocity_drift())
 		print("PosX_estimated", imu_kalman.filtered_state_means[1, 0]) 
 
 		#print(imu_kalman.gravity_compensate(imu_kalman.orientation, imu_kalman.acc_imu1))
 		#print(imu_kalman.acc_imu1)
-    	time.sleep(0.01)
+                time.sleep(0.01)
     	file_data.close()
 #        imu_kalman.rate.sleep()
