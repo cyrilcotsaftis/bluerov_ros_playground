@@ -8,7 +8,7 @@ import time
 import rospy
 from sensor_msgs.msg import Imu
 
-AccX_Variance = 0.05
+AccX_Variance = 0.05**2
 
 class Imu_Kalman():
 
@@ -139,8 +139,8 @@ if __name__ == "__main__":
 	while time.time()-t0<40:
 		imu_kalman.kalman_update()
 		file_data.write("{}, {}, {}, {}, {}, {}\n".format(imu_kalman.acc_imu1[0], imu_kalman.acc_imu2[0], imu_kalman.accX_mean, imu_kalman.filtered_state_means[1, 2],imu_kalman.filtered_state_means[1, 1], imu_kalman.filtered_state_means[1, 0]))
-                print(time.time()-t0)
-		print("AccX_Value", imu_kalman.accX_mean)
+        print(time.time()-t0)
+		print("AccX_Value", imu_kalman.acc_mean[0])
 		print("AccX_estimated", imu_kalman.filtered_state_means[1, 2])
 		print("VelX_estimated", imu_kalman.filtered_state_means[1, 1])
 		print("PosX_estimated", imu_kalman.filtered_state_means[1, 0]) 
