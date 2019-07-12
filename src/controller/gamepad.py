@@ -5,6 +5,7 @@ import rospy
 from inputs import get_gamepad
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
+import sys
 
 class Gamepad():
     def __init__(self, pwm_max=1900, pwm_neutral=1500, gain_pwm_cam = 400, rosrate=4):
@@ -180,11 +181,18 @@ class Gamepad():
 	return int(pwm)
 
     def publish(self):
-        events = get_gamepad()
-        for event in events:
-            #print(event.ev_type, event.code, event.state)
-            if event.code in self.input:
-                self.input[event.code](event.code,event.state) #launch the method that correspond to the input 
+        try:
+            events = get_gamepad()
+            for event in events:
+                #print(event.ev_type, event.code, event.state)
+                if event.code in self.input:
+                    self.input[event.code](event.code,event.state) #launch the method that correspond to the input 
+        except inputs.UnpluggedError:
+            print("inouts.UnpluggedError : No gamepad found")
+            sys.exit('1')
+        except e as error:
+            print(e)
+            sys.exit('1')
         print("LIST_BUTTONS_CLICKED : {}".format(self.list_buttons_clicked))
         self.msg_header()
         self.pub.publish(self.msg)
