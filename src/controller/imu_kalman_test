@@ -25,22 +25,25 @@ class Imu_Kalman():
 		self.acc_imu2 = [0,0,0]
 		self.acc_mean = [0,0,0]
 		self.accX_mean = 0
-
+                
+                self.acc_imu1X_after_filter=0
+                self.acc_imu2X_after_filter=0
+                self.w = 0.1            
 		# time step
 		self.dt = 1/100.
 
 		# transition_matrix  
 		self.F = [[1, self.dt, 0.5*self.dt**2], 
-				  [0,  1,       self.dt],
-				  [0,  0,        1]]
+                          [0,  1,       self.dt],
+                          [0,  0,        1]]
 
 		# observation_matrix   
 		self.H = [0, 0, 1]
 
 		# transition_covariance 
 		self.Q =	[[0.2,    0,      0], 
-					 [  0,  0.1,      0],
-					 [  0,    0,  10e-4]]
+                                 [  0,  0.1,      0],
+                                 [  0,    0,  10e-4]]
 
 		# observation_covariance 
 		#(the value can be calculated based on your sensors datasheet).
@@ -48,13 +51,13 @@ class Imu_Kalman():
 
 		# initial_state_mean
 		self.X0 =  [0,
-					0,
-					-0.05]
+                            0,
+                            -0.05]
 
 		# initial_state_covariance
 		self.P0 =  [[  0,    0,               0], 
-			  		[  0,    0,               0],
-			  		[  0,    0,   AccX_Variance]]
+                            [  0,    0,               0],
+                            [  0,    0,   AccX_Variance]]
 
 		self.n_dim_state = 3
   		self.filtered_state_means = np.zeros((2, self.n_dim_state))
@@ -87,12 +90,15 @@ class Imu_Kalman():
 						msg.linear_acceleration.y,
 						msg.linear_acceleration.z]
 
+                self.acc_imu1X_after_filter = self.w * self.acc_imu1[0] + (1-self.w)*self.acc_imu1X_after_filter
 	def _callback_imu_2(self, msg):
                 #moy : 0.27067840479669764
                 #moy : sur 3600s  0.23206011098693963
 		self.acc_imu2 = [msg.linear_acceleration.x-0.23206011098693963,
 						msg.linear_acceleration.y,
 						msg.linear_acceleration.z]
+               
+                self.acc_imu2X_after_filter = self.w * self.acc_imu2[0] + (1-self.w)*self.acc_imu2X_after_filter
 
 
 
@@ -125,33 +131,35 @@ class Imu_Kalman():
 			self.kf.filter_update(
 				self.filtered_state_means[0],
 				self.filtered_state_covariances[0],
-				[self.acc_mean[0]]
+				[(self.acc_imu1X_after_filter+self.acc_imu2X_after_filter)/2]
 				)
 			)
+                #self.acc_mean[0]
 		self.filtered_state_means[0] = self.filtered_state_means[1]
 		self.filtered_state_covariances[0] = self.filtered_state_covariances[1]
 
 
         def correct_velocity_drift(self):
             t = time.time()-self.t0
-# offset :  0.0779872161739863 inutile normalement)
-            return self.filtered_state_means[1, 1]-(-0.004093146960597331*t)
+#-0.024093146960597331
+            return self.filtered_state_means[1, 1]-(-0.014819050782577519*t)
 
 
 if __name__ == "__main__":
 	rospy.init_node('imu_kalman', anonymous=True)
 	imu_kalman = Imu_Kalman()
 #	while not rospy.is_shutdown():
-        file_data = open("data_imu_15.csv", "w")
+        file_data = open("data_imu_30.csv", "w")
         #file_data.write("IMU1, IMU2, MEAN, ESTIMATED, EFK_speed, EKF_speed_corrected, EFK_pos\n")
         t0 = time.time()
 	while time.time()-t0<40:
 		imu_kalman.kalman_update()
 		#file_data.write("{}, {}, {}, {}, {}, {}\n".format(imu_kalman.acc_imu1[0], imu_kalman.acc_imu2[0], imu_kalman.accX_mean, imu_kalman.filtered_state_means[1, 2],imu_kalman.filtered_state_means[1, 1], imu_kalman.filtered_state_means[1, 0]))
-		file_data.write("{}, {}, {}, {}, {}, {}, {}\n".format(imu_kalman.acc_imu1[0], imu_kalman.acc_imu2[0], imu_kalman.accX_mean, imu_kalman.filtered_state_means[1, 2], imu_kalman.filtered_state_means[1, 1], imu_kalman.correct_velocity_drift(), imu_kalman.filtered_state_means[1, 0]))
+		file_data.write("{}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n".format(time.time()-t0, imu_kalman.acc_imu1[0], imu_kalman.acc_imu1X_after_filter,imu_kalman.acc_imu2[0], imu_kalman.acc_imu2X_after_filter,imu_kalman.accX_mean, imu_kalman.filtered_state_means[1, 2], imu_kalman.filtered_state_means[1, 1], imu_kalman.correct_velocity_drift(), imu_kalman.filtered_state_means[1, 0]))
                 print(time.time()-t0)
 		print("AccX_Value", imu_kalman.accX_mean)
 		print("AccX_estimated", imu_kalman.filtered_state_means[1, 2])
+		print("AccX_filter", imu_kalman.acc_imu1X_after_filter)
 		print("VelX_estimated", imu_kalman.filtered_state_means[1, 1])
 		print("VelX_estimated", imu_kalman.correct_velocity_drift())
 		print("PosX_estimated", imu_kalman.filtered_state_means[1, 0]) 
