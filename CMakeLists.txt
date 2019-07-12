@@ -222,8 +222,12 @@ catkin_install_python(PROGRAMS
   src/controller/commander
   src/controller/setter
   src/controller/imu_kalman
+  src/controller/imu_kalman_class
+  src/controller/imu_kalman_test
+  src/imu_i2c/client.py
   src/controller/gamepad.py
   src/interface/gui.py
+
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 
 )
