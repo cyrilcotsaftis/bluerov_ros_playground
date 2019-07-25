@@ -194,9 +194,9 @@ class Imu_Kalman():
 if __name__ == "__main__":
     rospy.init_node('imu_kalman', anonymous=True)
     imu_kalman = Imu_Kalman()
-    file_data = open("data_imu_45.csv", "w")
+    file_data = open("data_imu_47.csv", "w")
     t0 = time.time()
-    while time.time()-t0<40:
+    while time.time()-t0<100:
             imu_kalman.kalman_update()
             file_data.write("{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n".format(time.time()-t0, 
                                                                             imu_kalman.acc_imu1[0], 
