@@ -25,20 +25,15 @@ class Display(QtWidgets.QMainWindow):
         self.depth_ctrl_msgToSend.KP = self.spinBox_KP_depth.value()
         self.depth_ctrl_msgToSend.KD = self.spinBox_KD_depth.value()
 
-
-        
     def _heading_param_clicked(self):
         #self.heading_ctrl_msgToSend.KI = self.spinBox_KI_heading.value()
         self.heading_ctrl_msgToSend.KP = self.spinBox_KP_heading.value()
         self.heading_ctrl_msgToSend.KD = self.spinBox_KD_heading.value()
 
-
-
     def _velocity_param_clicked(self):
         #self.velocity_ctrl_msgToSend.KI = self.spinBox_KI_velocity.value()
         self.velocity_ctrl_msgToSend.KP = self.spinBox__KP_velocity.value()
         self.velocity_ctrl_msgToSend.KD = self.spinBox_KD_velocity.value()
-
 
     def _target_param_clicked(self):
         self.target_ctrl_msgToSend.depth_desired = - self.doubleSpinBox_depth.value()#because in depht_controller, depth desired = altitude ( so -XX to go under the surface)
@@ -134,7 +129,7 @@ class Display(QtWidgets.QMainWindow):
 
     def _battery_callback(self, msg):
         self.battery = msg.voltage
-     
+
     def _callback_depth(self,msg):
         self.pwm_depth = msg.data
 
@@ -148,7 +143,7 @@ class Display(QtWidgets.QMainWindow):
         self.gamepad_axes = msg.axes
         self.gamepad_buttons = msg.buttons
         self.override_controller = self.gamepad_buttons[1]
-        
+
     def _settings_depth_ctrl_callback(self,msg):
         #depth_desired, pwm_max, pwm_neutral, K, KI, KP, KD, rosrate
         self.depth_ctrl_param_rcv = msg
@@ -166,6 +161,7 @@ class Display(QtWidgets.QMainWindow):
 
     def _bar30_callback(self,msg):
         self.bar30_pressure_measured = msg.press_abs
+
     def _callback_attitude(self, msg):
         self.heading_measured = msg.yaw
 

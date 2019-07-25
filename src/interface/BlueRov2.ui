@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1162</width>
-    <height>963</height>
+    <width>1155</width>
+    <height>691</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,8 +26,8 @@
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>210</y>
+      <x>20</x>
+      <y>180</y>
       <width>736</width>
       <height>207</height>
      </rect>
@@ -111,6 +111,13 @@
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_6">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+         <underline>true</underline>
+        </font>
+       </property>
        <property name="text">
         <string>SET PARAMETERS</string>
        </property>
@@ -385,8 +392,8 @@
    <widget class="QWidget" name="gridLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>500</y>
+      <x>90</x>
+      <y>480</y>
       <width>971</width>
       <height>111</height>
      </rect>
@@ -464,7 +471,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>heading_controller</string>
+        <string>heading</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -494,7 +501,7 @@
      <item row="4" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>velocity_controller</string>
+        <string>velocity</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -523,6 +530,13 @@
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+         <underline>true</underline>
+        </font>
+       </property>
        <property name="text">
         <string>CONTROLLER OVERVIEW</string>
        </property>
@@ -538,7 +552,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>depth_controller</string>
+        <string>depth</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -748,13 +762,16 @@
    <widget class="QWidget" name="gridLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>110</x>
       <y>10</y>
       <width>921</width>
-      <height>123</height>
+      <height>104</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_status">
+    <layout class="QGridLayout" name="gridLayout_status" rowminimumheight="20,20,50">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMinimumSize</enum>
+     </property>
      <item row="2" column="3">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -815,8 +832,18 @@
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+         <underline>true</underline>
+        </font>
+       </property>
        <property name="text">
         <string>STATUS : </string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -831,10 +858,30 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QTextBrowser" name="arm_disarm_display"/>
+      <widget class="QTextBrowser" name="arm_disarm_display">
+       <property name="maximumSize">
+        <size>
+         <width>225</width>
+         <height>50</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QTextBrowser" name="automatic_manual_ctrl_display"/>
+      <widget class="QTextBrowser" name="automatic_manual_ctrl_display">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>225</width>
+         <height>50</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_31">
@@ -844,7 +891,14 @@
       </widget>
      </item>
      <item row="2" column="5">
-      <widget class="QTextBrowser" name="light_level_display"/>
+      <widget class="QTextBrowser" name="light_level_display">
+       <property name="maximumSize">
+        <size>
+         <width>225</width>
+         <height>50</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="1" column="5">
       <widget class="QLabel" name="label_35">
@@ -858,13 +912,200 @@
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="gridLayoutWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>180</y>
+      <width>351</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_record_data">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_42">
+       <property name="text">
+        <string>Velocity</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="pushButton_record_depth">
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSpinBox" name="spinBox_heading_record_time">
+       <property name="maximum">
+        <number>3600</number>
+       </property>
+       <property name="singleStep">
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>60</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_39">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+         <underline>true</underline>
+        </font>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="text">
+        <string>RECORD DATA</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_40">
+       <property name="text">
+        <string>Depth</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="pushButton_record_heading">
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_43">
+       <property name="text">
+        <string>Recording Time (s)</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_41">
+       <property name="text">
+        <string>Heading</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="spinBox_depth_record_time">
+       <property name="maximum">
+        <number>3600</number>
+       </property>
+       <property name="singleStep">
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>60</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QPushButton" name="pushButton_record_velocity">
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="spinBox_velocity_record_time">
+       <property name="maximum">
+        <number>3600</number>
+       </property>
+       <property name="singleStep">
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>60</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QPushButton" name="pushButton_record_all">
+       <property name="text">
+        <string>Start All</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>1121</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>390</y>
+      <width>1121</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_3">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>170</y>
+      <width>20</width>
+      <height>231</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1162</width>
+     <width>1155</width>
      <height>25</height>
     </rect>
    </property>
@@ -872,10 +1113,23 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionLoad_parameters"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_parameters"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionLoad_parameters">
+   <property name="text">
+    <string>Load parameters</string>
+   </property>
+  </action>
+  <action name="actionSave_parameters">
+   <property name="text">
+    <string>Save parameters</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
