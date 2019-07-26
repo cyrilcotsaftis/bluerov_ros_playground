@@ -1,0 +1,15 @@
+{ 
+"acc_off_x" : 236, 
+"acc_off_y" : 260,
+"acc_off_z" : -18,
+"acc_scale_x" : 9351.964219,
+"acc_scale_y" : 10082.972004,
+"acc_scale_z" : 9915.252667,
+
+"magn_off_x" : -672,
+"magn_off_y" : -241,
+"magn_off_z" : -514,
+"magn_scale_x" : 376.433798,
+"magn_scale_y" : 409.322561,
+"magn_scale_z" : 475.686674 
+}
