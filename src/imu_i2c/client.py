@@ -44,8 +44,12 @@ class Imu_bridge:
         
         self.pub_imu1 = rospy.Publisher('/BlueRov2/imu/imu1', Imu, queue_size=10)
         self.pub_imu2 = rospy.Publisher('/BlueRov2/imu/imu2', Imu, queue_size=10)
+        self.pub_imu3 = rospy.Publisher('/imu/data_raw', Imu, queue_size=10)
         self.pub_imu1_mag = rospy.Publisher('/BlueRov2/imu/mag1', MagneticField, queue_size=10)
         self.pub_imu2_mag = rospy.Publisher('/BlueRov2/imu/mag2', MagneticField, queue_size=10)
+        self.pub_imu3_mag = rospy.Publisher('/imu/mag', MagneticField, queue_size=10)
+        
+
 
     #connection to the serveur
     def connection(self):
@@ -66,11 +70,14 @@ class Imu_bridge:
         return json.loads(s_data)      
 
     def publish(self,data):
-        msg_imu1, msg_mag1, msg_imu2, msg_mag2 = self._create_msg(data)
+        msg_imu1, msg_mag1, msg_imu2, msg_mag2, msg_imu3, msg_mag3 = self._create_msg(data)
         self.pub_imu1.publish(msg_imu1)
         self.pub_imu2.publish(msg_imu2)
+        self.pub_imu3.publish(msg_imu3)
         self.pub_imu1_mag.publish(msg_mag1)
         self.pub_imu2_mag.publish(msg_mag2)
+        self.pub_imu3_mag.publish(msg_mag3)
+        
 
     def _create_msg(self,data):
         """
@@ -131,7 +138,36 @@ class Imu_bridge:
         msg2_magfield.magnetic_field.y = data["IMU2"]["mag_z"]
         msg2_magfield.magnetic_field.z = data["IMU2"]["mag_x"]
         
-        return msg1, msg1_magfield, msg2, msg2_magfield
+        
+        msg3 = Imu()
+        msg3_magfield = MagneticField()   
+     
+        msg3.header.stamp = rospy.Time.now()
+        msg3.header.frame_id = '/base_link'
+        msg3_magfield.header.stamp = rospy.Time.now()
+        msg3_magfield.header.frame_id = '/base_link'
+        
+        msg3.linear_acceleration.x = (msg1.linear_acceleration.x + msg2.linear_acceleration.x)/2.
+        msg3.linear_acceleration.y = (msg1.linear_acceleration.y + msg2.linear_acceleration.y)/2.
+        msg3.linear_acceleration.z = (msg1.linear_acceleration.z + msg2.linear_acceleration.z)/2.
+        msg3.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
+        msg3.angular_velocity.x = (msg1.angular_velocity.x + msg2.angular_velocity.x)/2.
+        msg3.angular_velocity.y = (msg1.angular_velocity.y + msg2.angular_velocity.y)/2.
+        msg3.angular_velocity.z = (msg1.angular_velocity.z + msg2.angular_velocity.z)/2.
+        msg3.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
+        msg3.orientation.w = 0
+        msg3.orientation.x = 0
+        msg3.orientation.y = 0
+        msg3.orientation.z = 0
+        msg3.orientation_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        msg3_magfield.magnetic_field.x = (msg1_magfield.magnetic_field.x + msg2_magfield.magnetic_field.x)/2. 
+        msg3_magfield.magnetic_field.y = (msg1_magfield.magnetic_field.y + msg2_magfield.magnetic_field.y)/2. 
+        msg3_magfield.magnetic_field.z = (msg1_magfield.magnetic_field.z + msg2_magfield.magnetic_field.z)/2. 
+        
+        
+        return msg1, msg1_magfield, msg2, msg2_magfield, msg3, msg3_magfield
     
     def main(self):
         while True:
