@@ -58,6 +58,14 @@ class Imu_bridge:
         self.pub_imu2_mag = rospy.Publisher('/BlueRov2/imu/mag2', MagneticField, queue_size=10)
         self.pub_imu2_mag_raw = rospy.Publisher('/BlueRov2/imu/mag2_raw', MagneticField, queue_size=10)
 
+        self.IMU1_accX = 0        
+        self.IMU1_accY = 0
+        self.IMU1_accZ = 0
+        self.IMU2_accX = 0
+        self.IMU2_accY = 0
+        self.IMU2_accZ = 0
+        self.w = 0.1
+
     #connection to the serveur
     def connection(self):
         try:
@@ -102,9 +110,13 @@ class Imu_bridge:
         msg1_magfield.header.frame_id = '/base_link'
         #For calibration and normalisation of linear_acceleration and magnetometer
         #Calibrating file are multiplied by 1e3, need to multiply raw acceleration and magnetometer by 1e3 for concordance
-        msg1.linear_acceleration.x = (-data["IMU1"]["accel_y"]*1e3-self.calibrationFileIMU1['acc_off_x']) / self.calibrationFileIMU1['acc_scale_x']
-        msg1.linear_acceleration.y = (-data["IMU1"]["accel_z"]*1e3-self.calibrationFileIMU1['acc_off_y']) / self.calibrationFileIMU1['acc_scale_y']
-        msg1.linear_acceleration.z = ( data["IMU1"]["accel_x"]*1e3-self.calibrationFileIMU1['acc_off_z']) / self.calibrationFileIMU1['acc_scale_z']
+        self.IMU1_accX = self.w*(-data["IMU1"]["accel_y"]-self.calibrationFileIMU1['acc_off_x']*1e-3) + (1-self.w)*self.IMU1_accX
+        self.IMU1_accY = self.w*(-data["IMU1"]["accel_z"]-self.calibrationFileIMU1['acc_off_y']*1e-3) + (1-self.w)*self.IMU1_accY
+        self.IMU1_accZ = self.w*( data["IMU1"]["accel_x"]-self.calibrationFileIMU1['acc_off_z']*1e-3) + (1-self.w)*self.IMU1_accZ
+
+        msg1.linear_acceleration.x = self.IMU1_accX
+        msg1.linear_acceleration.y = self.IMU1_accY
+        msg1.linear_acceleration.z = self.IMU1_accZ
 
         msg1.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
@@ -161,9 +173,13 @@ class Imu_bridge:
         msg2_magfield.header.stamp = rospy.Time.now()
         msg2_magfield.header.frame_id = '/base_link'
 
-        msg2.linear_acceleration.x = (data["IMU2"]["accel_y"]*1e3-self.calibrationFileIMU2['acc_off_x']) / self.calibrationFileIMU2['acc_scale_x'] 
-        msg2.linear_acceleration.y = (data["IMU2"]["accel_z"]*1e3-self.calibrationFileIMU2['acc_off_y']) / self.calibrationFileIMU2['acc_scale_y']
-        msg2.linear_acceleration.z = (data["IMU2"]["accel_x"]*1e3-self.calibrationFileIMU2['acc_off_z']) / self.calibrationFileIMU2['acc_scale_z']
+        self.IMU2_accX = self.w*(data["IMU2"]["accel_y"]-self.calibrationFileIMU2['acc_off_x']*1e-3) + (1-self.w)*self.IMU2_accX
+        self.IMU2_accY = self.w*(data["IMU2"]["accel_z"]-self.calibrationFileIMU2['acc_off_y']*1e-3) + (1-self.w)*self.IMU2_accY
+        self.IMU2_accZ = self.w*(data["IMU2"]["accel_x"]-self.calibrationFileIMU2['acc_off_z']*1e-3) + (1-self.w)*self.IMU2_accZ
+
+        msg2.linear_acceleration.x = self.IMU2_accX
+        msg2.linear_acceleration.y = self.IMU2_accY
+        msg2.linear_acceleration.z = self.IMU2_accZ
         msg2.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
         msg2.angular_velocity.x = data["IMU2"]["gyro_y"]
