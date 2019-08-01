@@ -26,7 +26,6 @@ class IMU_listener():
         self.mag_imu1_raw = MagneticField()
         self.mag_imu2_raw = MagneticField()
 
-
     def _callback_imu_1(self, msg):
         self.acc_imu1 = msg
 
@@ -52,13 +51,14 @@ class IMU_listener():
         self.mag_imu2_raw = msg
 
     def record_data(self, t):
-        mag_file = open('mag.csv', 'w')
-        acc_file = open('acc.csv', 'w')
-        mag_file.write('TIME, IMU1_mag_x, IMU1_mag_y,IMU1_mag_z, IMU1_mag_raw_x, IMU1_mag_raw_y, IMU1_mag_raw_z,IMU2_mag_x, IMU2_mag_y,IMU2_mag_z, IMU2_mag_raw_x, IMU2_mag_raw_y, IMU2_mag_raw_z')
-        acc_file.write('TIME, IMU1_acc_x, IMU1_acc_y,IMU1_acc_z, IMU1_acc_raw_x, IMU1_acc_raw_y, IMU1_acc_raw_z,IMU2_acc_x, IMU2_acc_y,IMU2_acc_z, IMU2_acc_raw_x, IMU2_acc_raw_y, IMU2_acc_raw_z')
+        mag_file = open('mag3.csv', 'w')
+        acc_file = open('acc3.csv', 'w')
+        gyr_file = open('gyr3.csv', 'w')
+        mag_file.write('TIME, IMU1_mag_x, IMU1_mag_y, IMU1_mag_z, IMU1_mag_raw_x, IMU1_mag_raw_y, IMU1_mag_raw_z,IMU2_mag_x, IMU2_mag_y,IMU2_mag_z, IMU2_mag_raw_x, IMU2_mag_raw_y, IMU2_mag_raw_z')
+        acc_file.write('TIME, IMU1_acc_x, IMU1_acc_y, IMU1_acc_z, IMU1_acc_raw_x, IMU1_acc_raw_y, IMU1_acc_raw_z,IMU2_acc_x, IMU2_acc_y,IMU2_acc_z, IMU2_acc_raw_x, IMU2_acc_raw_y, IMU2_acc_raw_z')
+        gyr_file.write('TIME, IMU1_gyr_x, IMU1_gyr_y, IMU1_gyr_z, IMU1_gyr_raw_x, IMU1_gyr_raw_y, IMU1_gyr_raw_z,IMU2_gyr_x, IMU2_gyr_y,IMU2_gyr_z, IMU2_gyr_raw_x, IMU2_gyr_raw_y, IMU2_gyr_raw_z')
 
         t0 = time.time()
-        #NOT WORKING I DON'T KNOW WHY !!!!!!
         while (time.time()-t0)<t:
             recordTime = time.time()-t0
             print("RECORD TIME : {} /{}".format(recordTime, t))
@@ -89,10 +89,26 @@ class IMU_listener():
                                                                                 self.acc_imu2_raw.linear_acceleration.x,
                                                                                 self.acc_imu2_raw.linear_acceleration.y,
                                                                                 self.acc_imu2_raw.linear_acceleration.z)
+
+            gyr_buf = '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n'.format(recordTime,
+                                                                                self.acc_imu1.angular_velocity.x,
+                                                                                self.acc_imu1.angular_velocity.y,
+                                                                                self.acc_imu1.angular_velocity.z,
+                                                                                self.acc_imu1_raw.angular_velocity.x,
+                                                                                self.acc_imu1_raw.angular_velocity.y,
+                                                                                self.acc_imu1_raw.angular_velocity.z,
+                                                                                self.acc_imu2.angular_velocity.x,
+                                                                                self.acc_imu2.angular_velocity.y,
+                                                                                self.acc_imu2.angular_velocity.z,
+                                                                                self.acc_imu2_raw.angular_velocity.x,
+                                                                                self.acc_imu2_raw.angular_velocity.y,
+                                                                                self.acc_imu2_raw.angular_velocity.z)
+            gyr_file.write(gyr_buf)
             mag_file.write(mag_buf)
             acc_file.write(acc_buf)
-            time.sleep(0.01)
+            time.sleep(0.02)
         mag_file.close()
+        gyr_file.close()
         acc_file.close()
 
 if __name__ == "__main__":
