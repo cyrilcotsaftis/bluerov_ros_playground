@@ -12,6 +12,7 @@ from bluerov_ros_playground.msg import Set_depth
 from bluerov_ros_playground.msg import Set_target
 from bluerov_ros_playground.msg import Bar30
 from bluerov_ros_playground.msg import Attitude
+from recordThread import RecordThread
 
 PATH = "/home/nathan/ROS_bluerov2_ws/src/bluerov_ros_playground/bluerov_ros/src/interface/"
 g = 9.81  # m.s^-2 gravitationnal acceleration  
@@ -32,7 +33,7 @@ class Display(QtWidgets.QMainWindow):
 
     def _velocity_param_clicked(self):
         #self.velocity_ctrl_msgToSend.KI = self.spinBox_KI_velocity.value()
-        self.velocity_ctrl_msgToSend.KP = self.spinBox__KP_velocity.value()
+        self.velocity_ctrl_msgToSend.KP = self.spinBox_KP_velocity.value()
         self.velocity_ctrl_msgToSend.KD = self.spinBox_KD_velocity.value()
 
     def _target_param_clicked(self):
@@ -52,8 +53,20 @@ class Display(QtWidgets.QMainWindow):
     def _activate_velocity_ctrl_checked(self):
         self.velocity_ctrl_msgToSend.enable_velocity_ctrl = self.checkBox_activate_velocity_controller.isChecked()
 
+    def _record_depth_clicked(self):
+        filename = "test.csv"
+        recordtime = self.spinBox_depth_record_time.value()
+        argtorecord = ["bar30_pressure_measured", ""]
+        record = RecordThread(filename, recordtime, self, argtorecord)
+        record.start()
+
+    def _record_heading_clicked(self):
+        pass
+    def _record_velocity_clicked(self):
+        pass
+
     def __init__(self):
-        super(Display, self).__init__()
+        super(Display, self).__init__() 
         
         uic.loadUi(PATH + "BlueRov2.ui", self)
         
@@ -82,6 +95,9 @@ class Display(QtWidgets.QMainWindow):
         self.pushButton_send_parameters_depth.clicked.connect(self._depth_param_clicked)
         self.pushButton_send_parameters_target.clicked.connect(self._target_param_clicked)
         self.pushButton_send_pwm_max.clicked.connect(self._pwm_max_clicked)
+        self.pushButton_record_depth.clicked.connect(self._record_depth_clicked)
+        self.pushButton_record_heading.clicked.connect(self._record_heading_clicked)
+        self.pushButton_record_velocity.clicked.connect(self._record_velocity_clicked)
         self.checkBox_activate_depth_controller.clicked.connect(self._activate_depth_ctrl_checked)
         self.checkBox_activate_heading_controller.clicked.connect(self._activate_headind_ctrl_checked)
         self.checkBox_activate_velocity_controller.clicked.connect(self._activate_velocity_ctrl_checked)
@@ -115,7 +131,7 @@ class Display(QtWidgets.QMainWindow):
         self.target_ctrl_msgToSend = Set_target()
         
 
-        #INITIALISATION de L'AFFICHAGE
+        #INITIALISATION OF THE VIEW
         self.init()
 
     def init(self):
@@ -167,7 +183,7 @@ class Display(QtWidgets.QMainWindow):
 
     def display(self):
         #STATUS section :
-        if self.arm:
+        if self.arm: 
             self.arm_disarm_display.setText('ARM')
         else:
             self.arm_disarm_display.setText('DISARM')
@@ -204,7 +220,6 @@ class Display(QtWidgets.QMainWindow):
         self.velocity_controller_KI_display
         self.velocity_controller_KP_display.display(self.velocity_ctrl_param_rcv.KP)
         self.velocity_controller_KD_display.display(self.velocity_ctrl_param_rcv.KD)
-        
         
         self.pub_set_velocity.publish(self.velocity_ctrl_msgToSend)
         self.pub_set_heading.publish(self.heading_ctrl_msgToSend)
