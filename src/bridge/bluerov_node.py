@@ -345,8 +345,6 @@ class BlueRov(Bridge):
 
         self.pub.set_data('/imu/attitude',msg)
 
-        
-        
     def _create_odometry_msg(self):
         """ Create odometry message from ROV information
 
