@@ -1,0 +1,25 @@
+{
+"acc_unit" : "m.s^-2", 
+"acc_off_x" : 0.218,
+"acc_off_y" : 0.437,
+"acc_off_z" : -0.243,
+"acc_scale_x" : 1,
+"acc_scale_y" : 1,
+"acc_scale_z" : 1,
+
+"gyr_unit" : "degree per second",
+"gyr_off_x" : -0.239, 
+"gyr_off_y" : 1.94,
+"gyr_off_z" : 0.487,
+"gyr_scale_x" : 1,
+"gyr_scale_y" : 1,  
+"gyr_scale_z" : 1,
+
+"magn_unit": "?",
+"magn_off_x" : -276,
+"magn_off_y" : 270,
+"magn_off_z" : -102,
+"magn_scale_x" : 383.388747,
+"magn_scale_y" : 419.015187,
+"magn_scale_z" : 477.517047
+}

@@ -1,0 +1,25 @@
+{
+"acc_unit" : "m.s^-2", 
+"acc_off_x" : 0.363, 
+"acc_off_y" : 0.016,
+"acc_off_z" : -0.070,
+"acc_scale_x" : 1,
+"acc_scale_y" : 1,
+"acc_scale_z" : 1,
+
+"gyr_unit": "degrees per second",
+"gyr_off_x" : -4.64 , 
+"gyr_off_y" : 3.39,
+"gyr_off_z" : 0.772,
+"gyr_scale_x" : 1,
+"gyr_scale_y" : 1,  
+"gyr_scale_z" : 1,
+
+"magn_unit": "? need to mult the magfiel measured by 1e3",
+"magn_off_x" : -672,
+"magn_off_y" : -241,
+"magn_off_z" : -514,
+"magn_scale_x" : 376.433798,
+"magn_scale_y" : 409.322561,
+"magn_scale_z" : 475.686674 
+}

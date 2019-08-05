@@ -150,14 +150,14 @@ class Imu_bridge:
         msg3_magfield.header.stamp = rospy.Time.now()
         msg3_magfield.header.frame_id = '/base_link'
         
-        msg3.linear_acceleration.x = (msg1.linear_acceleration.x + msg2.linear_acceleration.x)/2.
-        msg3.linear_acceleration.y = (msg1.linear_acceleration.y + msg2.linear_acceleration.y)/2.
-        msg3.linear_acceleration.z = (msg1.linear_acceleration.z + msg2.linear_acceleration.z)/2.
+        msg3.linear_acceleration.x = (msg1_raw.linear_acceleration.x + msg2_raw.linear_acceleration.x)/2.
+        msg3.linear_acceleration.y = (msg1_raw.linear_acceleration.y + msg2_raw.linear_acceleration.y)/2.
+        msg3.linear_acceleration.z = (msg1_raw.linear_acceleration.z + msg2_raw.linear_acceleration.z)/2.
         msg3.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
-        msg3.angular_velocity.x = (msg1.angular_velocity.x + msg2.angular_velocity.x)/2.
-        msg3.angular_velocity.y = (msg1.angular_velocity.y + msg2.angular_velocity.y)/2.
-        msg3.angular_velocity.z = (msg1.angular_velocity.z + msg2.angular_velocity.z)/2.
+        msg3.angular_velocity.x = (msg1_raw.angular_velocity.x + msg2_raw.angular_velocity.x)/2.
+        msg3.angular_velocity.y = (msg1_raw.angular_velocity.y + msg2_raw.angular_velocity.y)/2.
+        msg3.angular_velocity.z = (msg1_raw.angular_velocity.z + msg2_raw.angular_velocity.z)/2.
         msg3.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
         msg3.orientation.w = 0
@@ -165,9 +165,9 @@ class Imu_bridge:
         msg3.orientation.y = 0
         msg3.orientation.z = 0
         msg3.orientation_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        msg3_magfield.magnetic_field.x = (msg1_magfield.magnetic_field.x + msg2_magfield.magnetic_field.x)/2. 
-        msg3_magfield.magnetic_field.y = (msg1_magfield.magnetic_field.y + msg2_magfield.magnetic_field.y)/2. 
-        msg3_magfield.magnetic_field.z = (msg1_magfield.magnetic_field.z + msg2_magfield.magnetic_field.z)/2.
+        msg3_magfield.magnetic_field.x = (msg1_magfield_raw.magnetic_field.x + msg2_magfield_raw.magnetic_field.x)/2. 
+        msg3_magfield.magnetic_field.y = (msg1_magfield_raw.magnetic_field.y + msg2_magfield_raw.magnetic_field.y)/2. 
+        msg3_magfield.magnetic_field.z = (msg1_magfield_raw.magnetic_field.z + msg2_magfield_raw.magnetic_field.z)/2.
                
         
         return  msg1_raw, msg1_magfield_raw, msg2_raw, msg2_magfield_raw, msg3, msg3_magfield

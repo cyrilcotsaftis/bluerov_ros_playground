@@ -51,9 +51,9 @@ class IMU_listener():
         self.mag_imu2_raw = msg
 
     def record_data(self, t):
-        mag_file = open('mag3.csv', 'w')
-        acc_file = open('acc3.csv', 'w')
-        gyr_file = open('gyr3.csv', 'w')
+        mag_file = open('mag6.csv', 'w')
+        acc_file = open('acc6.csv', 'w')
+        gyr_file = open('gyr6.csv', 'w')
         mag_file.write('TIME, IMU1_mag_x, IMU1_mag_y, IMU1_mag_z, IMU1_mag_raw_x, IMU1_mag_raw_y, IMU1_mag_raw_z,IMU2_mag_x, IMU2_mag_y,IMU2_mag_z, IMU2_mag_raw_x, IMU2_mag_raw_y, IMU2_mag_raw_z')
         acc_file.write('TIME, IMU1_acc_x, IMU1_acc_y, IMU1_acc_z, IMU1_acc_raw_x, IMU1_acc_raw_y, IMU1_acc_raw_z,IMU2_acc_x, IMU2_acc_y,IMU2_acc_z, IMU2_acc_raw_x, IMU2_acc_raw_y, IMU2_acc_raw_z')
         gyr_file.write('TIME, IMU1_gyr_x, IMU1_gyr_y, IMU1_gyr_z, IMU1_gyr_raw_x, IMU1_gyr_raw_y, IMU1_gyr_raw_z,IMU2_gyr_x, IMU2_gyr_y,IMU2_gyr_z, IMU2_gyr_raw_x, IMU2_gyr_raw_y, IMU2_gyr_raw_z')
@@ -106,7 +106,7 @@ class IMU_listener():
             gyr_file.write(gyr_buf)
             mag_file.write(mag_buf)
             acc_file.write(acc_buf)
-            time.sleep(0.02)
+            time.sleep(0.05)
         mag_file.close()
         gyr_file.close()
         acc_file.close()
