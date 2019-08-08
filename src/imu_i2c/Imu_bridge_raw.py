@@ -35,7 +35,7 @@ IMU2:{"time": t,
 "temperature": temp}}
 """
 
-class Imu_bridge:
+class Imu_bridge_raw:
     def __init__(self, host="192.168.2.2",port=14600):
         self.host = host 
         self.port = port 
@@ -46,8 +46,6 @@ class Imu_bridge:
         self.pub_imu1_mag_raw = rospy.Publisher('/BlueRov2/imu/mag1_raw', MagneticField, queue_size=10)
         self.pub_imu2_raw = rospy.Publisher('/BlueRov2/imu/imu2_raw', Imu, queue_size=10)
         self.pub_imu2_mag_raw = rospy.Publisher('/BlueRov2/imu/mag2_raw', MagneticField, queue_size=10)       
-        self.pub_imu3 = rospy.Publisher('/imu/data_raw', Imu, queue_size=10)
-        self.pub_imu3_mag = rospy.Publisher('/imu/mag', MagneticField, queue_size=10)    
         
     #connection to the serveur
     def connection(self):
@@ -68,14 +66,12 @@ class Imu_bridge:
         return json.loads(s_data)      
 
     def publish(self,data):
-        msg_imu1_raw, msg_mag1_raw, msg_imu2_raw, msg_mag2_raw, msg_imu3, msg_mag3 = self._create_msg(data)
+        msg_imu1_raw, msg_mag1_raw, msg_imu2_raw, msg_mag2_raw = self._create_msg(data)
 
         self.pub_imu1_raw.publish(msg_imu1_raw)
         self.pub_imu2_raw.publish(msg_imu2_raw)
         self.pub_imu1_mag_raw.publish(msg_mag1_raw)
         self.pub_imu2_mag_raw.publish(msg_mag2_raw)
-        self.pub_imu3.publish(msg_imu3)
-        self.pub_imu3_mag.publish(msg_mag3)
         
 
     def _create_msg(self,data):
@@ -140,37 +136,7 @@ class Imu_bridge:
         msg2_magfield_raw.magnetic_field.y = data["IMU2"]["mag_z"]
         msg2_magfield_raw.magnetic_field.z = data["IMU2"]["mag_x"]
         
-        
-        #----IMU mean 1+2 --------    
-        msg3 = Imu()
-        msg3_magfield = MagneticField()   
-     
-        msg3.header.stamp = rospy.Time.now()
-        msg3.header.frame_id = '/base_link'
-        msg3_magfield.header.stamp = rospy.Time.now()
-        msg3_magfield.header.frame_id = '/base_link'
-        
-        msg3.linear_acceleration.x = (msg1_raw.linear_acceleration.x + msg2_raw.linear_acceleration.x)/2.
-        msg3.linear_acceleration.y = (msg1_raw.linear_acceleration.y + msg2_raw.linear_acceleration.y)/2.
-        msg3.linear_acceleration.z = (msg1_raw.linear_acceleration.z + msg2_raw.linear_acceleration.z)/2.
-        msg3.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        
-        msg3.angular_velocity.x = (msg1_raw.angular_velocity.x + msg2_raw.angular_velocity.x)/2.
-        msg3.angular_velocity.y = (msg1_raw.angular_velocity.y + msg2_raw.angular_velocity.y)/2.
-        msg3.angular_velocity.z = (msg1_raw.angular_velocity.z + msg2_raw.angular_velocity.z)/2.
-        msg3.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        
-        msg3.orientation.w = 0
-        msg3.orientation.x = 0
-        msg3.orientation.y = 0
-        msg3.orientation.z = 0
-        msg3.orientation_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        msg3_magfield.magnetic_field.x = (msg1_magfield_raw.magnetic_field.x + msg2_magfield_raw.magnetic_field.x)/2. 
-        msg3_magfield.magnetic_field.y = (msg1_magfield_raw.magnetic_field.y + msg2_magfield_raw.magnetic_field.y)/2. 
-        msg3_magfield.magnetic_field.z = (msg1_magfield_raw.magnetic_field.z + msg2_magfield_raw.magnetic_field.z)/2.
-               
-        
-        return  msg1_raw, msg1_magfield_raw, msg2_raw, msg2_magfield_raw, msg3, msg3_magfield
+        return  msg1_raw, msg1_magfield_raw, msg2_raw, msg2_magfield_raw 
     
     def main(self):
         while True:
@@ -180,8 +146,8 @@ class Imu_bridge:
             time.sleep(0.01)
 
 if __name__=="__main__":
-    rospy.init_node('imu__', anonymous=True)
-    bridge = Imu_bridge()
+    rospy.init_node('Imu_bridge_raw', anonymous=True)
+    bridge = Imu_bridge_raw()
     bridge.main()
     bridge.socket.close()
 

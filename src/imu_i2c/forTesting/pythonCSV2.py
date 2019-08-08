@@ -64,6 +64,16 @@ IMU1_Z = np.array(IMU1_Z)
 IMU2_X = np.array(IMU2_X) 
 IMU2_Y = np.array(IMU2_Y)
 IMU2_Z = np.array(IMU2_Z)
+
+IMU1_X_raw = np.array(IMU1_X_raw)
+IMU1_Y_raw = np.array(IMU1_Y_raw)
+IMU1_Z_raw = np.array(IMU1_Z_raw)
+
+IMU2_X_raw = np.array(IMU2_X_raw)
+IMU2_Y_raw = np.array(IMU2_Y_raw)
+IMU2_Z_raw = np.array(IMU2_Z_raw)
+
+
 def graph():
     
     if sensor == "Linear Acceleration":
@@ -76,6 +86,7 @@ def graph():
         plt.legend()
         plt.subplot(3,2,3)
         plt.plot(time, speedX_mean_simpson,'k', label="IMU1+IMU2")
+        plt.plot(time, speedTEST_mean_simpson,'g', label="try")
         plt.title("X Speed")
         plt.xlabel("Time (s)")
         plt.ylabel("Speed (m.s^-1)")
@@ -119,46 +130,56 @@ IMU2_X_gt = IMU1_X.copy()
 IMU2_Y_gt = IMU1_Y.copy()
 IMU2_Z_gt = IMU1_Z.copy()
 
-thresh = 0.25
-for i in range(len(IMU1_X)):
-    if IMU1_X[i]>-thresh and IMU1_X[i]<thresh:
-        IMU1_X_gt[i] = 0
-    if IMU1_Y[i]>-thresh and IMU1_Y[i]<thresh:
-        IMU1_Y_gt[i] = 0
-    if IMU1_Z[i]>-thresh and IMU1_Z[i]<thresh:
-        IMU1_Z_gt[i] = 0
-    if IMU2_X[i]>-thresh and IMU2_X[i]<thresh:
-        IMU2_X_gt[i] = 0
-    if IMU2_Y[i]>-thresh and IMU2_Y[i]<thresh:
-        IMU2_Y_gt[i] = 0
-    if IMU2_Z[i]>-thresh and IMU2_Z[i]<thresh:
-        IMU2_Z_gt[i] = 0
+#thresh = 0.25
+#for i in range(len(IMU1_X)):
+#    if IMU1_X[i]>-thresh and IMU1_X[i]<thresh:
+#        IMU1_X_gt[i] = 0
+#    if IMU1_Y[i]>-thresh and IMU1_Y[i]<thresh:
+#        IMU1_Y_gt[i] = 0
+#    if IMU1_Z[i]>-thresh and IMU1_Z[i]<thresh:
+#        IMU1_Z_gt[i] = 0
+#    if IMU2_X[i]>-thresh and IMU2_X[i]<thresh:
+#        IMU2_X_gt[i] = 0
+#    if IMU2_Y[i]>-thresh and IMU2_Y[i]<thresh:
+#        IMU2_Y_gt[i] = 0
+#    if IMU2_Z[i]>-thresh and IMU2_Z[i]<thresh:
+#        IMU2_Z_gt[i] = 0
+#
+#IMU1_X_gt = np.array(IMU1_X_gt) 
+#IMU1_Y_gt = np.array(IMU1_Y_gt) 
+#IMU1_Z_gt = np.array(IMU1_Z_gt) 
+#IMU2_X_gt = np.array(IMU2_X_gt) 
+#IMU2_Y_gt = np.array(IMU2_Y_gt) 
+#IMU2_Z_gt = np.array(IMU2_Z_gt) 
 
-IMU1_X_gt = np.array(IMU1_X_gt) 
-IMU1_Y_gt = np.array(IMU1_Y_gt) 
-IMU1_Z_gt = np.array(IMU1_Z_gt) 
-IMU2_X_gt = np.array(IMU2_X_gt) 
-IMU2_Y_gt = np.array(IMU2_Y_gt) 
-IMU2_Z_gt = np.array(IMU2_Z_gt) 
+
 
 #-------INTGR => SPEED-------
 meanX = (IMU1_X_gt + IMU2_X_gt)/2
 meanY = (IMU1_Y_gt + IMU2_Y_gt)/2
 speedX_mean_simpson = [0]
 speedY_mean_simpson = [0]
-dt = 0.02
+speedTEST_mean_simpson = [0]
+dt = 0.01
 for i in range(0,len(meanX)-1):
     speedX_mean_simpson.append(scipy.integrate.simps(meanX[:i+1], dx=dt))
     speedY_mean_simpson.append(scipy.integrate.simps(meanY[:i+1], dx=dt))
+    speedTEST_mean_simpson.append(speedTEST_mean_simpson[i] + scipy.integrate.simps(meanX[i:i+2], dx=dt))
 speedX_mean_simpson= np.array(speedX_mean_simpson)
 speedY_mean_simpson= np.array(speedY_mean_simpson)
 
+
+a, b = 0, len(speedX_IMU1_simpson)
+coeff = np.polyfit(time[a:b], speedX_IMU1_simpson[a,b])
+lin_reg = coeff[0]*time+coeff[1]
+speedX_IMU1_simpson_corr = speedX_IMU1_simpson - (coeff[0]*time[a:b]+coeff[1])
 #-------INTGR => SPEED-------
 posX_mean_simpson = [0]
 posY_mean_simpson = [0]
 for i in range(0,len(meanX)-1):
-    posX_mean_simpson.append(scipy.integrate.simps(speedX_mean_simpson[:i+1]))
-    posY_mean_simpson.append(scipy.integrate.simps(speedY_mean_simpson[:i+1]))
+    posX_mean_simpson.append(scipy.integrate.simps(speedX_mean_simpson[:i+3]))
+    posY_mean_simpson.append(scipy.integrate.simps(speedY_mean_simpson[:i+3]))
+
 
 graph()
 

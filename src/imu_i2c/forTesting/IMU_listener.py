@@ -6,7 +6,8 @@ from sensor_msgs.msg import MagneticField
 
 class IMU_listener():
     def __init__(self):
-        rospy.Subscriber('/BlueRov2/imu/imu1', Imu, self._callback_imu_1)
+#        rospy.Subscriber('/BlueRov2/imu/imu1', Imu, self._callback_imu_1)
+        rospy.Subscriber('/imu/data_raw', Imu, self._callback_imu_1)
         rospy.Subscriber('/BlueRov2/imu/imu2', Imu, self._callback_imu_2)
         rospy.Subscriber('/BlueRov2/imu/mag1', MagneticField, self._callback_mag_1)
         rospy.Subscriber('/BlueRov2/imu/mag2', MagneticField, self._callback_mag_2)
@@ -51,9 +52,9 @@ class IMU_listener():
         self.mag_imu2_raw = msg
 
     def record_data(self, t):
-        mag_file = open('mag6.csv', 'w')
-        acc_file = open('acc6.csv', 'w')
-        gyr_file = open('gyr6.csv', 'w')
+        mag_file = open('magfromglobalbag.csv', 'w')
+        acc_file = open('accfromglobalbag.csv', 'w')
+        gyr_file = open('gyrfromglobalbag.csv', 'w')
         mag_file.write('TIME, IMU1_mag_x, IMU1_mag_y, IMU1_mag_z, IMU1_mag_raw_x, IMU1_mag_raw_y, IMU1_mag_raw_z,IMU2_mag_x, IMU2_mag_y,IMU2_mag_z, IMU2_mag_raw_x, IMU2_mag_raw_y, IMU2_mag_raw_z')
         acc_file.write('TIME, IMU1_acc_x, IMU1_acc_y, IMU1_acc_z, IMU1_acc_raw_x, IMU1_acc_raw_y, IMU1_acc_raw_z,IMU2_acc_x, IMU2_acc_y,IMU2_acc_z, IMU2_acc_raw_x, IMU2_acc_raw_y, IMU2_acc_raw_z')
         gyr_file.write('TIME, IMU1_gyr_x, IMU1_gyr_y, IMU1_gyr_z, IMU1_gyr_raw_x, IMU1_gyr_raw_y, IMU1_gyr_raw_z,IMU2_gyr_x, IMU2_gyr_y,IMU2_gyr_z, IMU2_gyr_raw_x, IMU2_gyr_raw_y, IMU2_gyr_raw_z')
