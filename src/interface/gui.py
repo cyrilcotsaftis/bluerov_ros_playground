@@ -6,12 +6,7 @@ from std_msgs.msg import UInt16
 from std_msgs.msg import Bool
 from sensor_msgs.msg import BatteryState
 from sensor_msgs.msg import Joy
-from bluerov_ros_playground.msg import Set_velocity 
-from bluerov_ros_playground.msg import Set_heading 
-from bluerov_ros_playground.msg import Set_depth
-from bluerov_ros_playground.msg import Set_target
-from bluerov_ros_playground.msg import Bar30
-from bluerov_ros_playground.msg import Attitude
+from bluerov_ros_playground.msg import Attitude, Bar30, Set_depth, Set_heading, Set_target, Set_velocity, State
 from recordThread import RecordThread
 
 PATH = "/home/nathan/ROS_bluerov2_ws/src/bluerov_ros_playground/bluerov_ros/src/interface/"
@@ -74,8 +69,11 @@ class Display(QtWidgets.QMainWindow):
         self.pub_set_depth = rospy.Publisher('/Settings/set_depth', Set_depth, queue_size=10)
         self.pub_set_velocity = rospy.Publisher('/Settings/set_velocity', Set_velocity, queue_size=10)
         self.pub_set_target = rospy.Publisher('/Settings/set_target', Set_target, queue_size=10)
-        rospy.Subscriber('/BlueRov2/arm', Bool, self._arm_callback) 
+
+        rospy.Subscriber('/BlueRov2/State', State, self._state_callback) 
         rospy.Subscriber('/BlueRov2/battery', BatteryState, self._battery_callback)
+        rospy.Subscriber('/BlueRov2/bar30', Bar30, self._bar30_callback)
+        rospy.Subscriber('/BlueRov2/imu/attitude', Attitude, self._callback_attitude)  
 
         rospy.Subscriber('/Command/depth', UInt16, self._callback_depth)
         rospy.Subscriber('/Command/heading', UInt16, self._callback_heading)
@@ -85,10 +83,7 @@ class Display(QtWidgets.QMainWindow):
         rospy.Subscriber('/Settings/set_depth', Set_depth, self._settings_depth_ctrl_callback)
         rospy.Subscriber('/Settings/set_heading', Set_heading, self._settings_heading_ctrl_callback)
         rospy.Subscriber('/Settings/set_velocity', Set_velocity, self._settings_velocity_ctrl_callback)
-    
         rospy.Subscriber('/Settings/set_target', Set_target, self._settings_target_callback)
-        rospy.Subscriber('/BlueRov2/bar30', Bar30, self._bar30_callback)
-        rospy.Subscriber('/BlueRov2/imu/attitude', Attitude, self._callback_attitude)  
 
         self.pushButton_send_parameters_heading.clicked.connect(self._heading_param_clicked)
         self.pushButton_send_parameters_velocity.clicked.connect(self._velocity_param_clicked)
@@ -107,7 +102,6 @@ class Display(QtWidgets.QMainWindow):
         self.timer.timeout.connect(self.display)
         self.timer.start(250)
         
-        self.arm = False    
         self.battery = None
 
         self.pwm_depth = None
@@ -119,7 +113,8 @@ class Display(QtWidgets.QMainWindow):
         self.override_controller = None
         self.bar30_pressure_measured = 1015 
         self.heading_measured = None
-
+        
+        self.state = State()
         self.heading_ctrl_param_rcv = Set_heading() #depth_desired, pwm_max, pwm_neutral, K, KI, KP, KD, rosrate
         self.depth_ctrl_param_rcv = Set_depth() #heading_desired, KP, KD, pwm_max, pwm_neutral, rosrate
         self.velocity_ctrl_param_rcv = Set_velocity()#velocity_desired, pwm_max, pwm_neutral, KP, KD, rosrate
@@ -140,8 +135,8 @@ class Display(QtWidgets.QMainWindow):
         self._velocity_param_clicked()
         self._target_param_clicked()
 
-    def _arm_callback(self,msg):
-        self.arm = msg.data
+    def _state_callback(self,msg):
+        self.state = msg
 
     def _battery_callback(self, msg):
         self.battery = msg.voltage
@@ -183,7 +178,7 @@ class Display(QtWidgets.QMainWindow):
 
     def display(self):
         #STATUS section :
-        if self.arm: 
+        if self.state.arm: 
             self.arm_disarm_display.setText('ARM')
         else:
             self.arm_disarm_display.setText('DISARM')
@@ -197,8 +192,8 @@ class Display(QtWidgets.QMainWindow):
 
 	#self.light_level_display 
         
-                #CONTROLLER OVERVIEW :
-        depth = -(self.bar30_pressure_measured-p0)/(rho*g)
+            #CONTROLLER OVERVIEW :
+        depth = -(self.bar30_pressure_measured*100-p0)/(rho*g) #pressure measured in hPa => *100 to have Pa
         self.depth_measured_display.display(depth)
         self.depth_controller_pwm_display.display(self.pwm_depth)
         self.depth_target_display.display(self.target_rcv.depth_desired)
@@ -206,7 +201,6 @@ class Display(QtWidgets.QMainWindow):
         self.depth_controller_KP_display.display(self.depth_ctrl_param_rcv.KP)
         self.depth_controller_KD_display.display(self.depth_ctrl_param_rcv.KD)
         
-
         self.heading_measured_display.display(self.heading_measured)
         self.heading_target_display.display(self.target_rcv.heading_desired)
         self.heading_controller_pwm_display.display(self.pwm_heading)

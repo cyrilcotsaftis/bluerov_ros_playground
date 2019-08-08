@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1155</width>
+    <width>1153</width>
     <height>691</height>
    </rect>
   </property>
@@ -201,7 +201,7 @@
        <property name="value">
         <number>50</number>
        </property>
-       <property name="displayIntegerBase">
+       <property name="displayIntegerBase" stdset="0">
         <number>10</number>
        </property>
       </widget>
@@ -375,7 +375,7 @@
        <property name="value">
         <number>1500</number>
        </property>
-       <property name="displayIntegerBase">
+       <property name="displayIntegerBase" stdset="0">
         <number>10</number>
        </property>
       </widget>
@@ -762,15 +762,15 @@
    <widget class="QWidget" name="gridLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>90</x>
       <y>10</y>
-      <width>921</width>
+      <width>901</width>
       <height>104</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_status" rowminimumheight="20,20,50">
+    <layout class="QGridLayout" name="gridLayout_status" columnstretch="75,75,75,75,75,75" rowminimumheight="20,20,50">
      <property name="sizeConstraint">
-      <enum>QLayout::SetMinimumSize</enum>
+      <enum>QLayout::SetDefaultConstraint</enum>
      </property>
      <item row="2" column="3">
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -849,6 +849,15 @@
      </item>
      <item row="1" column="3">
       <widget class="QLabel" name="label_34">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhNone</set>
+       </property>
        <property name="text">
         <string>Battery Level</string>
        </property>
@@ -859,6 +868,12 @@
      </item>
      <item row="2" column="1">
       <widget class="QTextBrowser" name="arm_disarm_display">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="maximumSize">
         <size>
          <width>225</width>
@@ -890,23 +905,55 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="5">
-      <widget class="QTextBrowser" name="light_level_display">
-       <property name="maximumSize">
-        <size>
-         <width>225</width>
-         <height>50</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="5">
+     <item row="1" column="4">
       <widget class="QLabel" name="label_35">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>Light level</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <widget class="QLabel" name="label_44">
+       <property name="text">
+        <string>Camera</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="5">
+      <widget class="QLCDNumber" name="lcdNumber">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="smallDecimalPoint">
+        <bool>false</bool>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::Filled</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
+      <widget class="QLCDNumber" name="lcdNumber_2">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="smallDecimalPoint">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -1099,13 +1146,26 @@
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
+   <widget class="QLabel" name="label_45">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>360</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>To be implemented</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1155</width>
+     <width>1153</width>
      <height>25</height>
     </rect>
    </property>
