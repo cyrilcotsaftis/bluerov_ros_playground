@@ -2,32 +2,23 @@
 
 import threading
 import time
+import subprocess
 
-class RecordThread(threading.Thread):
-    def __init__(self,filename, recordtime, classtorecord, argtorecord ):
+class RosBagRecordThread(threading.Thread):
+    def __init__(self, recordtime,topicstorecord,rosbagname ):
 
         """
-        filename : to store data
-        recordtime :
-        argtorecord : list of str with the name of attr to record
+        rosbagname : to store data
+        topicstorecord : list of str with the name of topics to record
         """
         threading.Thread.__init__(self)
         self.recordTime = recordtime
-        self.filename = filename
-        self.argToRecord = argtorecord
-        self.classToRecord = classtorecord
-
+        self.filename = rosbagname
+        self.topicsToRecord = topicstorecord
+        rosbag_cmd = ["rosbag","record","-O", "--duration={}s".format(self.recordTime), "record/"+self.filename, "
     def run(self):
-        f = open(self.filename,'w')
-        t0 = time.time()
-        while time.time()-t0<self.recordTime :
-            print(time.time()-t0)
-            buf = "{}, ".format(time.time()-t0)
-            for i in self.argToRecord:
-                buf = buf + "{}, ".format(getattr(self.classToRecord, i))
-            f.write(buf+"\n")
-            time.sleep(0.1)
-        f.close()
+        
+        subprocess.call()
 
 
 

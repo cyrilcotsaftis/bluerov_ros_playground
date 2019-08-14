@@ -127,9 +127,9 @@ class Display(QtWidgets.QMainWindow):
         
 
         #INITIALISATION OF THE VIEW
-        self.init()
+        self.init_ros()
 
-    def init(self):
+    def init_ros(self):
         self._depth_param_clicked()
         self._heading_param_clicked()
         self._velocity_param_clicked()
@@ -189,7 +189,8 @@ class Display(QtWidgets.QMainWindow):
             self.automatic_manual_ctrl_display.setText('MANUAL')
 
         self.battery_level_display.display(self.battery)
-
+        self.light_level_display.display(self.state.light)
+        self.camera_tilt_display.display(self.state.camera)
 	#self.light_level_display 
         
             #CONTROLLER OVERVIEW :

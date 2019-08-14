@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1153</width>
-    <height>691</height>
+    <width>1212</width>
+    <height>639</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -935,7 +935,7 @@
       </widget>
      </item>
      <item row="2" column="5">
-      <widget class="QLCDNumber" name="lcdNumber">
+      <widget class="QLCDNumber" name="camera_tilt_display">
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
@@ -948,12 +948,12 @@
       </widget>
      </item>
      <item row="2" column="4">
-      <widget class="QLCDNumber" name="lcdNumber_2">
+      <widget class="QLCDNumber" name="light_level_display">
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
        <property name="smallDecimalPoint">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -1165,7 +1165,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1153</width>
+     <width>1212</width>
      <height>25</height>
     </rect>
    </property>
