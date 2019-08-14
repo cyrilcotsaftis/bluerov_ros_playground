@@ -104,7 +104,7 @@ If you need more information about the topics and what you can access, take a lo
 
 <pre>
                       +-----------------------+         +------------------------+
-                      |     <b>Raspberry Pi</b>      |         |    <b>Topside Commputer</b>   |
+                      |     <b>Raspberry Pi</b>      |         |    <b>Topside Computer</b>   |
                       |    <b>ip 192.168.2.2</b>     |         |     <b>ip 192.168.2.1</b>     |
                       |                       |         |                        |
 +-------+  Telemetry  | +-------------------+ |         |                        |
