@@ -26,8 +26,8 @@
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>180</y>
+      <x>10</x>
+      <y>220</y>
       <width>736</width>
       <height>207</height>
      </rect>
@@ -201,7 +201,7 @@
        <property name="value">
         <number>50</number>
        </property>
-       <property name="displayIntegerBase" stdset="0">
+       <property name="displayIntegerBase">
         <number>10</number>
        </property>
       </widget>
@@ -261,6 +261,12 @@
      </item>
      <item row="4" column="2">
       <widget class="QSpinBox" name="spinBox_KI_heading">
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhDigitsOnly</set>
+       </property>
        <property name="maximum">
         <number>1000</number>
        </property>
@@ -375,7 +381,7 @@
        <property name="value">
         <number>1500</number>
        </property>
-       <property name="displayIntegerBase" stdset="0">
+       <property name="displayIntegerBase">
         <number>10</number>
        </property>
       </widget>
@@ -393,7 +399,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>480</y>
+      <y>460</y>
       <width>971</width>
       <height>111</height>
      </rect>
@@ -762,53 +768,34 @@
    <widget class="QWidget" name="gridLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>10</y>
-      <width>901</width>
-      <height>104</height>
+      <x>150</x>
+      <y>30</y>
+      <width>774</width>
+      <height>111</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_status" columnstretch="75,75,75,75,75,75" rowminimumheight="20,20,50">
+    <layout class="QGridLayout" name="gridLayout_status" columnstretch="75,0,0,0,0,0">
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
-     <item row="2" column="3">
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLCDNumber" name="battery_level_display">
-         <property name="font">
-          <font>
-           <pointsize>20</pointsize>
-          </font>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="smallDecimalPoint">
-          <bool>true</bool>
-         </property>
-         <property name="digitCount">
-          <number>7</number>
-         </property>
-         <property name="segmentStyle">
-          <enum>QLCDNumber::Flat</enum>
-         </property>
-         <property name="intValue" stdset="0">
-          <number>0</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_36">
-         <property name="text">
-          <string>V</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+     <item row="1" column="4">
+      <widget class="QLabel" name="label_35">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Light level</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
      <item row="1" column="1">
       <widget class="QLabel" name="label_32">
@@ -823,7 +810,7 @@
      <item row="1" column="2">
       <widget class="QLabel" name="label_33">
        <property name="text">
-        <string>AUTOMATIC/MANUAL control</string>
+        <string>Control :</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -841,25 +828,6 @@
        </property>
        <property name="text">
         <string>STATUS : </string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3">
-      <widget class="QLabel" name="label_34">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="inputMethodHints">
-        <set>Qt::ImhNone</set>
-       </property>
-       <property name="text">
-        <string>Battery Level</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -905,25 +873,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="4">
-      <widget class="QLabel" name="label_35">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Light level</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="5">
       <widget class="QLabel" name="label_44">
        <property name="text">
@@ -947,13 +896,70 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="3">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLCDNumber" name="battery_level_display">
+         <property name="font">
+          <font>
+           <pointsize>20</pointsize>
+          </font>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="smallDecimalPoint">
+          <bool>true</bool>
+         </property>
+         <property name="digitCount">
+          <number>7</number>
+         </property>
+         <property name="segmentStyle">
+          <enum>QLCDNumber::Flat</enum>
+         </property>
+         <property name="intValue" stdset="0">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_36">
+         <property name="text">
+          <string>V</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item row="2" column="4">
       <widget class="QLCDNumber" name="light_level_display">
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
        <property name="smallDecimalPoint">
-        <bool>false</bool>
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLabel" name="label_34">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhNone</set>
+       </property>
+       <property name="text">
+        <string>Battery Level</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -963,7 +969,7 @@
     <property name="geometry">
      <rect>
       <x>780</x>
-      <y>180</y>
+      <y>220</y>
       <width>351</width>
       <height>171</height>
      </rect>
@@ -1110,8 +1116,8 @@
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>140</y>
+      <x>20</x>
+      <y>170</y>
       <width>1121</width>
       <height>20</height>
      </rect>
@@ -1124,9 +1130,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>390</y>
+      <y>430</y>
       <width>1121</width>
-      <height>71</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="orientation">
@@ -1136,27 +1142,14 @@
    <widget class="Line" name="line_3">
     <property name="geometry">
      <rect>
-      <x>760</x>
-      <y>170</y>
+      <x>750</x>
+      <y>230</y>
       <width>20</width>
-      <height>231</height>
+      <height>201</height>
      </rect>
     </property>
     <property name="orientation">
      <enum>Qt::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_45">
-    <property name="geometry">
-     <rect>
-      <x>870</x>
-      <y>360</y>
-      <width>161</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>To be implemented</string>
     </property>
    </widget>
   </widget>

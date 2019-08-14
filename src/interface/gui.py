@@ -7,7 +7,7 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import BatteryState
 from sensor_msgs.msg import Joy
 from bluerov_ros_playground.msg import Attitude, Bar30, Set_depth, Set_heading, Set_target, Set_velocity, State
-from recordThread import RecordThread
+from rosbagrecordthread import RosbagRecordThread
 
 PATH = "/home/nathan/ROS_bluerov2_ws/src/bluerov_ros_playground/bluerov_ros/src/interface/"
 g = 9.81  # m.s^-2 gravitationnal acceleration  
@@ -43,22 +43,40 @@ class Display(QtWidgets.QMainWindow):
 
     def _activate_depth_ctrl_checked(self):
         self.depth_ctrl_msgToSend.enable_depth_ctrl = self.checkBox_activate_depth_controller.isChecked()
+
     def _activate_headind_ctrl_checked(self):
         self.heading_ctrl_msgToSend.enable_heading_ctrl = self.checkBox_activate_heading_controller.isChecked()
+
     def _activate_velocity_ctrl_checked(self):
         self.velocity_ctrl_msgToSend.enable_velocity_ctrl = self.checkBox_activate_velocity_controller.isChecked()
 
     def _record_depth_clicked(self):
-        filename = "test.csv"
         recordtime = self.spinBox_depth_record_time.value()
-        argtorecord = ["bar30_pressure_measured", ""]
-        record = RecordThread(filename, recordtime, self, argtorecord)
+        topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_target"]
+        filename = 'depth' #without .bag
+        record = RosbagRecordThread(filename, topicstorecord, recordtime)
         record.start()
 
     def _record_heading_clicked(self):
-        pass
+        recordtime = self.spinBox_heading_record_time.value()
+        topicstorecord = ["/BlueRov2/imu/attitude", "/BlueRov2/state", "/Settings/set_heading", "/Settings/set_target"]
+        filename = 'heading' #without .bag
+        record = RosbagRecordThread(filename, topicstorecord, recordtime)
+        record.start()
+
     def _record_velocity_clicked(self):
-        pass
+        recordtime = self.spinBox_velocity_record_time.value()
+        topicstorecord = ["/imu/imu_raw", "/BlueRov2/state", "/Settings/set_velocity", "/Settings/set_target"]
+        filename = 'velocity' #without .bag
+        record = RosbagRecordThread(filename, topicstorecord, recordtime)
+        record.start()
+ 
+    def _record_all_clicked(self):
+        recordtime = max(self.spinBox_depth_record_time.value(), self.spinBox_heading_record_time.value(), self.spinBox_velocity_record_time.value())
+        topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/imu/attitude", "/imu/imu_raw", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_heading",  "/Settings/set_velocity", "/Settings/set_target"]
+        filename = 'allparams' #without .bag
+        record = RosbagRecordThread(filename, topicstorecord, recordtime)
+        record.start()
 
     def __init__(self):
         super(Display, self).__init__() 
@@ -93,6 +111,7 @@ class Display(QtWidgets.QMainWindow):
         self.pushButton_record_depth.clicked.connect(self._record_depth_clicked)
         self.pushButton_record_heading.clicked.connect(self._record_heading_clicked)
         self.pushButton_record_velocity.clicked.connect(self._record_velocity_clicked)
+        self.pushButton_record_all.clicked.connect(self._record_all_clicked)
         self.checkBox_activate_depth_controller.clicked.connect(self._activate_depth_ctrl_checked)
         self.checkBox_activate_heading_controller.clicked.connect(self._activate_headind_ctrl_checked)
         self.checkBox_activate_velocity_controller.clicked.connect(self._activate_velocity_ctrl_checked)
