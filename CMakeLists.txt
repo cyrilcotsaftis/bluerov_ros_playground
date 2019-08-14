@@ -216,11 +216,11 @@ catkin_install_python(PROGRAMS
   src/bridge/bluerov_node.py
   src/bridge/node
   src/controller/subscriber.py
-  src/controller/depth_controller
-  src/controller/heading_controller
-  src/controller/velocity_controller
-  src/controller/commander
-  src/controller/setter
+  src/controller/depth_controller.py
+  src/controller/heading_controller.py
+  src/controller/velocity_controller.py
+  src/controller/commander.py
+  src/controller/setter.py
   src/imu_i2c/Imu_bridge.py
   src/imu_i2c/Imu_bridge_raw.py
   src/imu_i2c/client.py

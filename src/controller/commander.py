@@ -16,9 +16,9 @@ class Commander():
         self.pub_rc5 = rospy.Publisher('/BlueRov2/rc_channel5/set_pwm', UInt16, queue_size=10) #FORWARD
         self.pub_rc6 = rospy.Publisher('/BlueRov2/rc_channel6/set_pwm', UInt16, queue_size=10) #LATERAL
         self.pub_rc8 = rospy.Publisher('/BlueRov2/rc_channel8/set_pwm', UInt16, queue_size=10) #CAMERA TILT 
-        self.pub_rc9 = rospy.Publisher('/BlueRov2/rc_channel9/set_pwm', UInt16, queue_size=10) #LIGHTS 1
-        self.pub_rc10 = rospy.Publisher('/BlueRov2/rc_channel10/set_pwm', UInt16, queue_size=10) #LIGHTS 2
-        self.pub_manual_control = rospy.Publisher('/BlueRov2/manual_control', Joy, queue_size=10)
+        #self.pub_rc9 = rospy.Publisher('/BlueRov2/rc_channel9/set_pwm', UInt16, queue_size=10) #LIGHTS 1
+        #self.pub_rc10 = rospy.Publisher('/BlueRov2/rc_channel10/set_pwm', UInt16, queue_size=10) #LIGHTS 2
+        #self.pub_manual_control = rospy.Publisher('/BlueRov2/manual_control', Joy, queue_size=10)
 
         rospy.Subscriber('/Command/depth', UInt16, self._callback_depth)
         rospy.Subscriber('/Command/heading', UInt16, self._callback_heading)
@@ -96,19 +96,19 @@ class Commander():
         """
         self.pub_arm.publish(self.gamepad_buttons[0])
         self.pub_rc8.publish(self.gamepad_buttons[2]) #CAMERA
-        self.pub_rc9.publish(self.gamepad_buttons[5])
-        self.pub_rc10.publish(self.gamepad_buttons[5])
+        #self.pub_rc9.publish(self.gamepad_buttons[5])
+        #self.pub_rc10.publish(self.gamepad_buttons[5])
         
         self.pub_rc3.publish(self.gamepad_axes[0]) # THROTTLE
         self.pub_rc4.publish(self.gamepad_axes[1]) # YAW
         self.pub_rc5.publish(self.gamepad_axes[2]) # FORWARD
         self.pub_rc6.publish(self.gamepad_axes[3]) # LATERAL
         
-        msg = Joy()
-        msg.buttons = [0]*16
-        msg.buttons[14]=self.gamepad_buttons[4] # light increase gain
-        msg.buttons[13]=self.gamepad_buttons[3] # light decrease gain
-        self.pub_manual_control.publish(msg)
+        #msg = Joy()
+        #msg.buttons = [0]*16
+        #msg.buttons[14]=self.gamepad_buttons[4] # light increase gain
+        #msg.buttons[13]=self.gamepad_buttons[3] # light decrease gain
+        #self.pub_manual_control.publish(msg)
 
     def master_control(self):
         if self.override_controller == 1:
