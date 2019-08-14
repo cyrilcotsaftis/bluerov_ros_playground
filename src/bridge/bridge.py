@@ -17,7 +17,11 @@ class Bridge(object):
             baudrate (int, optional): Baudrate for serial communication
         """
         self.conn = mavutil.mavlink_connection(device, baud=baudrate)
+
         self.conn.wait_heartbeat()
+        self.conn.mav.request_data_stream_send(self.conn.target_system, self.conn.target_component,
+                            mavutil.mavlink.MAV_DATA_STREAM_ALL,4, 1)
+            
         self.data = {}
 
     def get_data(self):
