@@ -9,7 +9,7 @@ class Bridge(object):
         conn (TYPE): MAVLink connection
         data (dict): Deal with all data
     """
-    def __init__(self, device='udp:192.168.2.1:14550', baudrate=115200):
+    def __init__(self, device='udpin:192.168.2.1:14560', baudrate=115200):
         """
         Args:
             device (str, optional): Input device
@@ -17,6 +17,7 @@ class Bridge(object):
             baudrate (int, optional): Baudrate for serial communication
         """
         self.conn = mavutil.mavlink_connection(device, baud=baudrate)
+        self.conn.wait_heartbeat()
         self.data = {}
 
     def get_data(self):
@@ -277,7 +278,6 @@ if __name__ == '__main__':
     #i=0
     #filemav = open("mavlinkdata.txt", 'w')
     while True:
-        
         bridge.update()
         bridge.print_data()
         #filemav.write("{}\n".format(bridge.data))
