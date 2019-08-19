@@ -98,14 +98,17 @@
      </item>
      <item row="1" column="4">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_heading">
+       <property name="decimals">
+        <number>0</number>
+       </property>
        <property name="minimum">
-        <double>-3.140000000000000</double>
+        <double>0.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>3.140000000000000</double>
+        <double>360.000000000000000</double>
        </property>
        <property name="singleStep">
-        <double>0.050000000000000</double>
+        <double>1.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -1150,6 +1153,19 @@
     </property>
     <property name="orientation">
      <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_45">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>190</y>
+      <width>281</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>In progress heading from Rad to degre</string>
     </property>
    </widget>
   </widget>
