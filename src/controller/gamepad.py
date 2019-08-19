@@ -8,6 +8,32 @@ from std_msgs.msg import Bool
 import sys
 
 class Gamepad():
+    """Class Gamepad: link between gamepad and ROS. Creating for Logitech Gamepad F310
+    
+    WARNING: light stuff doesn't work yet
+
+    ROS topics suscribed:
+    ---------------------
+    '/BlueRov2/arm': to know at every time the satus of the BlueRov2
+
+    ROS topics published:
+    ---------------------
+    '/Command/joy'
+
+    Attributes:
+    -----------
+    rate: rosrate, unused
+    pwm_max: int, to saturate gamepad command
+    pwm_neutral: int, 1500 for BlueRov2 thrusters
+    gain_pwm_cam: int, gain for camera tilt speed 
+    list_buttons_clicked: list, len=16, 1=clicked, 0=not clicked, Not used yet but has the format \
+            of manual_control for mavlink command in /bridge/bridge.py  
+    override_controller: int, 1=Manual control, 0=Automatic control
+    armed: bool, True=arm, False=disarm, read from '/BlueRov2/arm'/
+    gain_light: int, store the gain for lights
+    inc_gain_light: int, step for increasing or decreasing gain_light
+    input: dict, link between button named from gamepad and method to call.
+    """
     def __init__(self, pwm_max=1900, pwm_neutral=1500, gain_pwm_cam = 400, rosrate=4):
         self.pub = rospy.Publisher('/Command/joy', Joy, queue_size=10)
         self.sub = rospy.Subscriber('/BlueRov2/arm', Bool, self._arm_callback) 
@@ -72,16 +98,24 @@ class Gamepad():
             }
         self.msg_header()
         self.pub.publish(self.msg)
-        print('TOTO')
+
     def _arm_callback(self, msg):
+        """Read data from '/BlueRov2/arm'
+
+        ROS message:
+        ------------
+        Bool data
+        """
         self.armed = msg.data
         print('ARM ', self.armed)    
 
     def msg_header(self):
+        "Create the header of the Joy message"
         self.msg.header.stamp = rospy.Time.now()
         self.msg.header.frame_id = self.model_base_link
 
     def _NDEF(self, key, state):
+        """Method called when not assigned button from gamepad is pressed see self.input dictionary"""
         print('{} not BIND, state : {}'.format(key, state))
 
     def _arm(self, key, state):
@@ -105,7 +139,7 @@ class Gamepad():
             self.override_controller = 0
         self.msg.buttons[1] = self.override_controller
         print("OVERRIDE_CONTROLLER, key : {}, state, {}, override_controller : {}".format(key, state, self.override_controller))
-        
+
     def _throttle(self, key, state):
         state = 255-state #to fix 255 top, 0 down (default : 0 up, 255 down)
         pwm_min = self.pwm_neutral - (self.pwm_max-self.pwm_neutral)
@@ -113,14 +147,12 @@ class Gamepad():
         self.msg.axes[0] = self.pwm_set_neutral(pwm)
         print("THROTTLE, key : {}, state : {}, pwm : {}".format(key, state, self.msg.axes[0]))
 
-
     def _yaw(self, key,state):
         pwm_min = self.pwm_neutral - (self.pwm_max-self.pwm_neutral)
         pwm = pwm_min + state*((self.pwm_max-pwm_min)/255.)   #255. is the maximum of the stick need to be a float
         self.msg.axes[1] = self.pwm_set_neutral(pwm)
         print("YAW, key : {}, state : {}, pwm : {}".format(key, state, self.msg.axes[1]))
 
-    
     def _forward(self, key, state):
         state = 255-state #to fix 255 top, 0 down (default : 0 up, 255 down)
         pwm_min = self.pwm_neutral - (self.pwm_max-self.pwm_neutral)
@@ -133,7 +165,6 @@ class Gamepad():
         pwm = pwm_min + state*((self.pwm_max-pwm_min)/255.)   #255. is the maximum of the stick need to be a float
         self.msg.axes[3] = self.pwm_set_neutral(pwm)
         print("LATERAL, key : {}, state : {}, pwm : {}".format(key, state, self.msg.axes[3]))
-
 
     def _cam_up(self, key, state):
         if state == 1:
@@ -176,13 +207,14 @@ class Gamepad():
         print("SET_GAIN_LIGHT, key : {}, state : {}, gain_light : {}, gain_dec : {}, gain_inc : {}".format(key, state, self.msg.buttons[5], self.msg.buttons[3], self.msg.buttons[4]))
 
     def pwm_set_neutral(self,pwm):
+        """Set to zeros when joystisk come back to the center"""
         if pwm >= 1495 and pwm <= 1505: #to ensure that when stick are in the center neutral pwm i send
             pwm = self.pwm_neutral
 	return int(pwm)
 
     def publish(self):
         try:
-            events = get_gamepad()
+            events = get_gamepad() #from the input library
             for event in events:
                 #print(event.ev_type, event.code, event.state)
                 if event.code in self.input:
