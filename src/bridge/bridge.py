@@ -242,7 +242,7 @@ class Bridge(object):
     
     def set_manual_control(self,joy_list=[0]*4, buttons_list=[0]*16):
         """ Set a MANUAL_CONTROL message for dealing with more control with ArduSub
-        for now it is just to deal with lights
+        for now it is just to deal with lights under test...
         """
         x,y,z,r = 0,0,0,0#32767,32767,32767,32767
         b = 0
