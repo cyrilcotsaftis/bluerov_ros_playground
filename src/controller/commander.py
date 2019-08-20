@@ -48,7 +48,7 @@ class Commander():
     enable_velocity_ctrl: bool, to allow commander to publish pwm from velocity controller, read\
             from '/Settings/set_velocity'
     gamepad_axes: list, len=4, [THROTTLE,YAW,FORWARD, LATERAL], from '/Command/joy'
-    gamepad_buttons: list, len=5, [ARM, OVERRIDE_CONTROLLER, LIGHT_DEC, LIGHT_INC, PWM_LIGHT],\
+    gamepad_buttons: list, len=5, [ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC, GAIN_LIGHT],\
             from '/Command/joy'
     override_controller: int, 1=MANUAL MODE with gamepad, 0=AUTOMATIC MODE from \
             controllers if there are enables. Define by the gamepad
@@ -189,7 +189,7 @@ class Commander():
         """In manual mode : deal with the gamepad inputs
 
         gamepad_axes = [THROTTLE, YAW, FORWARD, LATERAL]
-        gamepad_buttons = [ARM, OVERRIDE_CONTROLLER, PWM_CAMERA, LIGHT_DEC, LIGHT_INC]
+        gamepad_buttons = [ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC, GAIN_LIGHT]
 
         lights cannot be controlled yet
         """

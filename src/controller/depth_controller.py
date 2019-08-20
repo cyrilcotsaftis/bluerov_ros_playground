@@ -9,15 +9,15 @@ from bluerov_ros_playground.msg import Set_depth
 from bluerov_ros_playground.msg import Set_target
 #axis z goes up
 
-g = 9.81  # m.s^-2 gravitationnal acceleration 
+g = 9.81  # m.s^-2 gravitational acceleration 
 p0 = 990*100 #Pa surface pressure NEED to be cheked
-rho = 1000 # kg.m^3  water density
+rho = 1000 # kg/m^3  water density
 
 class Depth_Control():
     """ Class Depth_Control: reach depth desired with PID control
     
     WARNING : In this script, the axis Z for the depth goes up. 
-              To reach 1m depth the input will be -1
+              To reach 1m depth the input must be -1
 
     ROS topics subscribed:
     -----------------------
@@ -45,7 +45,7 @@ class Depth_Control():
     time: read from '/BlueRov2/bar30', from sensor measure, for intefration
     I_depth: integral of depth
     """
-    def __init__(self, depth_desired=0, pwm_max=1550, pwm_neutral=1500, K=0, rosrate=4):
+    def __init__(self, depth_desired=0, pwm_max=1550, pwm_neutral=1500, rosrate=4):
         self.pub_pwm = rospy.Publisher('/Command/depth', UInt16, queue_size=10)
         rospy.Subscriber('/BlueRov2/bar30', Bar30, self._callback_bar30)
         rospy.Subscriber('/Settings/set_depth', Set_depth, self._callback_set_depth)
@@ -166,7 +166,7 @@ class Depth_Control():
         self.pub_pwm.publish(pwm)
 
 if __name__ == "__main__":
-    rospy.init_node('depth_control', anonymous=True)
+    rospy.init_node('depth_controller', anonymous=True)
     depth_control = Depth_Control()
     
     while not rospy.is_shutdown():
