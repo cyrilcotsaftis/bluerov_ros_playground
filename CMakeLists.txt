@@ -223,7 +223,6 @@ catkin_install_python(PROGRAMS
   src/controller/setter.py
   src/imu_i2c/Imu_bridge.py
   src/imu_i2c/Imu_bridge_raw.py
-  src/imu_i2c/client.py
   src/controller/gamepad.py
   src/interface/gui.py
 
