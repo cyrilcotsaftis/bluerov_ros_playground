@@ -32,7 +32,6 @@ class ClientThread(threading.Thread):
         self.conn = conn
         self.address = address
         self.running = True
-        #TODO flag if run out of time in receive + need to check in the main prog if the flag to kill in on the thresd.join()
 
     def run(self):
         t0 = time.time()
