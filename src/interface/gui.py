@@ -13,6 +13,7 @@ PATH = "/home/nathan/ROS_bluerov2_ws/src/bluerov_ros_playground/bluerov_ros/src/
 g = 9.81  # m.s^-2 gravitationnal acceleration  
 p0 = 990*100 #Pa surface pressure NEED to be cheked    
 rho = 1000 # kg.m^3  water density
+PI = 3.1415
 
 class Display(QtWidgets.QMainWindow):
 
@@ -50,30 +51,45 @@ class Display(QtWidgets.QMainWindow):
     def _activate_velocity_ctrl_checked(self):
         self.velocity_ctrl_msgToSend.enable_velocity_ctrl = self.checkBox_activate_velocity_controller.isChecked()
 
+    def _enable_automatic_control_checked(self):
+        """"Publish a Joy neutral message to enable automatic mode without gamepad
+        axis : [THROTTLE, YAW, FORWARD, LATERAL] => pwm = 1500 for neutral
+        buttons : [ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC, GAIN_LIGHT] => \
+                [ 0(disarm), 0(automatic control)|| 1(manual mode), 1500(pwm neutral), 0,0,0]
+        """
+        msg = Joy()
+        msg.header.stamp = rospy.Time.now()
+        msg.header.frame_id = '/base_link'
+        msg.axes = [1500,1500,1500,1500]
+        #enable_automatic_mode = 1 =>
+        enable_automatic_mode = int(not self.checkBox_enable_automatic_control.isChecked())
+        msg.buttons = [0, enable_automatic_mode, 1500, 0, 0, 0]
+        self.pub_automatic_control.publish(msg)
+
     def _record_depth_clicked(self):
         recordtime = self.spinBox_depth_record_time.value()
-        topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_target"]
+        topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_target", "/Command/depth"]
         filename = 'depth' #without .bag
         record = RosbagRecordThread(filename, topicstorecord, recordtime)
         record.start()
 
     def _record_heading_clicked(self):
         recordtime = self.spinBox_heading_record_time.value()
-        topicstorecord = ["/BlueRov2/imu/attitude", "/BlueRov2/state", "/Settings/set_heading", "/Settings/set_target"]
+        topicstorecord = ["/BlueRov2/imu/attitude", "/BlueRov2/state", "/Settings/set_heading", "/Settings/set_target","/Command/heading" ]
         filename = 'heading' #without .bag
         record = RosbagRecordThread(filename, topicstorecord, recordtime)
         record.start()
 
     def _record_velocity_clicked(self):
         recordtime = self.spinBox_velocity_record_time.value()
-        topicstorecord = ["/imu/imu_raw", "/BlueRov2/state", "/Settings/set_velocity", "/Settings/set_target"]
+        topicstorecord = ["/imu/data_raw", "/BlueRov2/state", "/Settings/set_velocity", "/Settings/set_target", "/Command/velocity"]
         filename = 'velocity' #without .bag
         record = RosbagRecordThread(filename, topicstorecord, recordtime)
         record.start()
  
     def _record_all_clicked(self):
         recordtime = max(self.spinBox_depth_record_time.value(), self.spinBox_heading_record_time.value(), self.spinBox_velocity_record_time.value())
-        topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/imu/attitude", "/imu/imu_raw", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_heading",  "/Settings/set_velocity", "/Settings/set_target"]
+        topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/imu/attitude", "/imu/data_raw", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_heading",  "/Settings/set_velocity", "/Settings/set_target", "/Command/depth", "/Command/velocity", "/Command/heading"]
         filename = 'allparams' #without .bag
         record = RosbagRecordThread(filename, topicstorecord, recordtime)
         record.start()
@@ -87,8 +103,9 @@ class Display(QtWidgets.QMainWindow):
         self.pub_set_depth = rospy.Publisher('/Settings/set_depth', Set_depth, queue_size=10)
         self.pub_set_velocity = rospy.Publisher('/Settings/set_velocity', Set_velocity, queue_size=10)
         self.pub_set_target = rospy.Publisher('/Settings/set_target', Set_target, queue_size=10)
+        self.pub_automatic_control = rospy.Publisher('/Command/joy', Joy, queue_size=10)
 
-        rospy.Subscriber('/BlueRov2/State', State, self._state_callback) 
+        rospy.Subscriber('/BlueRov2/state', State, self._state_callback) 
         rospy.Subscriber('/BlueRov2/battery', BatteryState, self._battery_callback)
         rospy.Subscriber('/BlueRov2/bar30', Bar30, self._bar30_callback)
         rospy.Subscriber('/BlueRov2/imu/attitude', Attitude, self._callback_attitude)  
@@ -115,6 +132,7 @@ class Display(QtWidgets.QMainWindow):
         self.checkBox_activate_depth_controller.clicked.connect(self._activate_depth_ctrl_checked)
         self.checkBox_activate_heading_controller.clicked.connect(self._activate_headind_ctrl_checked)
         self.checkBox_activate_velocity_controller.clicked.connect(self._activate_velocity_ctrl_checked)
+        self.checkBox_enable_automatic_control.clicked.connect(self._enable_automatic_control_checked)
 
 
         self.timer = QtCore.QTimer()
@@ -153,6 +171,7 @@ class Display(QtWidgets.QMainWindow):
         self._heading_param_clicked()
         self._velocity_param_clicked()
         self._target_param_clicked()
+        self._pwm_max_clicked()
 
     def _state_callback(self,msg):
         self.state = msg
@@ -195,6 +214,22 @@ class Display(QtWidgets.QMainWindow):
     def _callback_attitude(self, msg):
         self.heading_measured = msg.yaw
 
+    def rad2deg(self, rad):
+        """Convert yaw in [-pi,pi]rad to [0,360]deg, 0rad = 0deg, 
+        [-pi,0]rad~[180,360] 
+        [0,pi]rad~[0,180]
+
+        Input:
+        ------
+        rad : radian in range [-pi,pi]
+        """
+        if rad is None:
+            pass
+        elif rad >= 0:
+            return (rad * 180) / PI
+        else :
+            return 360 - (-rad * 180) / PI
+        
     def display(self):
         #STATUS section :
         if self.state.arm: 
@@ -221,7 +256,7 @@ class Display(QtWidgets.QMainWindow):
         self.depth_controller_KP_display.display(self.depth_ctrl_param_rcv.KP)
         self.depth_controller_KD_display.display(self.depth_ctrl_param_rcv.KD)
         
-        self.heading_measured_display.display(self.heading_measured)
+        self.heading_measured_display.display(self.rad2deg(self.heading_measured))
         self.heading_target_display.display(self.target_rcv.heading_desired)
         self.heading_controller_pwm_display.display(self.pwm_heading)
         self.heading_controller_KI_display

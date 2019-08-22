@@ -4,24 +4,31 @@ import threading
 import time
 import subprocess
 import datetime
+import os
 
 class RosbagRecordThread(threading.Thread):
     def __init__(self, rosbagname, topicstorecord, recordtime ):
 
-        """
+        """Thread to record a rosbag. 
+        This thread lauch a rosbag command line to record topics in input
+
+        Input:
+        ------
         rosbagname : str without .bag : to store data
         topicstorecord : list of str with the name of topics to record
+        recordtime : duration of the record
         """
         threading.Thread.__init__(self)
         date = datetime.datetime.now()
         filename = "{}{}-{}-{}-{}-{}-{}.bag".format(rosbagname,date.year,date.month,date.day,date.hour,date.minute,date.second)
 
-        self.rosbag_cmd = ["rosbag","record","-O", "record/"+filename, "--duration={}s".format(recordtime)] + topicstorecord
+        #Definition of the rosbag command line
+        self.rosbag_cmd = ["rosbag","record","-O", os.getcwd()+"/"+filename, "--duration={}s".format(recordtime)] + topicstorecord 
         print(self.rosbag_cmd)
+
     def run(self):
-        print("Start recording at {}".format(self.rosbag_cmd[3]))
-        #subprocess.call(self.rosbag_cmd)
-        print("Record finished")
+        #Launch the rosbag command
+        subprocess.call(self.rosbag_cmd) 
 
 if __name__=="__main__":
     thrd = RosbagRecordThread('test', ["/imu/imu", "/imu/magn"], 30)
