@@ -38,7 +38,7 @@ class Heading_Controller():
             '/BlueRov2/imu/attitude'
     """
 
-    def __init__(self, heading_desired=0, KP=35, KD=25, pwm_max=1550, pwm_neutral=1500,rosrate=4):
+    def __init__(self, heading_desired=0, KP=35, KD=25, pwm_max=1500, pwm_neutral=1500,rosrate=4):
         self.pub_pwm = rospy.Publisher('/Command/heading', UInt16, queue_size=10)
 
         rospy.Subscriber('/BlueRov2/imu/attitude', Attitude, self._callback_att)
@@ -109,7 +109,7 @@ class Heading_Controller():
         float64 heading_desired
         float64 velocity_desired
         """
-        self.heading_desired = msg.heading_desired
+        self.heading_desired = self.deg2rad(msg.heading_desired)
 
     def deg2rad(deg):
         """Convert [0-360]deg to [-pi,pi]rad => [180,360]deg ~ [-pi,0]rad  ,  [0,180]deg ~ [0,pi]rad

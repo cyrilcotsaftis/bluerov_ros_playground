@@ -88,7 +88,7 @@ class Commander():
 
         self.override_controller = 1 # 0:automatic control, 1:gamepad control
         self.gamepad_axes = [self.pwm_neutral, self.pwm_neutral, self.pwm_neutral, self.pwm_neutral] # THROTTLE,YAW,FORWARD, LATERAL
-        self.gamepad_buttons = [0,0,0,0,0, 1100] # ARM, OVERRIDE_CONTROLLER, LIGHT_DEC, LIGHT_INC, PWM_LIGHT
+        self.gamepad_buttons = [0,0,1500,0,0, 1100] # ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC, PWM_LIGHT
 
     def _callback_depth(self,msg):
         """Read from '/Command/depth'
@@ -221,7 +221,7 @@ class Commander():
 
 if __name__ == "__main__":
     rospy.init_node('Commander', anonymous=True)
-    cmd = Commander(pwm_velocity=1500)
+    cmd = Commander()
     while not rospy.is_shutdown():
         cmd.master_control()
         cmd.rate.sleep()

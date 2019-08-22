@@ -45,7 +45,7 @@ class Depth_Control():
     time: read from '/BlueRov2/bar30', from sensor measure, for intefration
     I_depth: integral of depth
     """
-    def __init__(self, depth_desired=0, pwm_max=1550, pwm_neutral=1500, rosrate=4):
+    def __init__(self, depth_desired=0, pwm_max=1500, pwm_neutral=1500, rosrate=4):
         self.pub_pwm = rospy.Publisher('/Command/depth', UInt16, queue_size=10)
         rospy.Subscriber('/BlueRov2/bar30', Bar30, self._callback_bar30)
         rospy.Subscriber('/Settings/set_depth', Set_depth, self._callback_set_depth)
