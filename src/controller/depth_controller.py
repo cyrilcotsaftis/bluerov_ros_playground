@@ -148,7 +148,7 @@ class Depth_Control():
         
         Return:
         -------
-        pwm: int, published on '/Command/heading'
+        pwm: int, published on '/Command/depth'
         """
         pwm_min = self.pwm_neutral - (self.pwm_max - self.pwm_neutral)
         if pwm > self.pwm_max :

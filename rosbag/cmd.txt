@@ -1,0 +1,3 @@
+rosbag record -a
+rosbag record -O [NAMESESSION] --duration=2m -a
+rosbag record --duration=1m rosout /BlueRov2/bar30 /BlueRov2/attitude /imu/data_raw /Settings/set_target /Settings/set_depth /Settings/set_heading /BlueRov2/imu/imu1_raw /BlueRov2/imu/imu2_raw
