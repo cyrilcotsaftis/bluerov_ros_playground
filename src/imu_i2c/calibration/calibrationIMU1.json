@@ -15,11 +15,11 @@
 "gyr_scale_y" : 1,  
 "gyr_scale_z" : 1,
 
-"magn_unit": "? need to mult the magfiel measured by 1e3",
-"magn_off_x" : -672,
-"magn_off_y" : -241,
-"magn_off_z" : -514,
-"magn_scale_x" : 376.433798,
-"magn_scale_y" : 409.322561,
-"magn_scale_z" : 475.686674 
+"magn_unit": "",
+"magn_off_x" : -0.672,
+"magn_off_y" : -0.241,
+"magn_off_z" : -0.514,
+"magn_scale_x" : 0.376,
+"magn_scale_y" : 0.409,
+"magn_scale_z" : 0.475 
 }

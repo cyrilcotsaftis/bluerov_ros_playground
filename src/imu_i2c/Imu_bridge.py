@@ -36,19 +36,24 @@ IMU2:{"time": t,
 """
 
 class Imu_bridge:
+    """Class Imu_bridge : Client to the imu server on Raspberry Pi. Collect data from Imus, calibrate and filter them befor publishing them on th etopic /imu/data_raw
+    
+    """
+    
     def __init__(self, host="192.168.2.2",port=14600):
         self.host = host 
         self.port = port 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connection()
         #----Uncomment to publish IMUs data on two different topics (4 more lines to uncomment in publish method)----
-        self.pub_imu1 = rospy.Publisher('/BlueRov2/imu/imu1', Imu, queue_size=10)
-        self.pub_imu2 = rospy.Publisher('/BlueRov2/imu/imu2', Imu, queue_size=10)
-        self.pub_imu1_mag = rospy.Publisher('/BlueRov2/imu/mag1', MagneticField, queue_size=10)
-        self.pub_imu2_mag = rospy.Publisher('/BlueRov2/imu/mag2', MagneticField, queue_size=10)
+#        self.pub_imu1 = rospy.Publisher('/BlueRov2/imu/imu1', Imu, queue_size=10)
+#        self.pub_imu2 = rospy.Publisher('/BlueRov2/imu/imu2', Imu, queue_size=10)
+#        self.pub_imu1_mag = rospy.Publisher('/BlueRov2/imu/mag1', MagneticField, queue_size=10)
+#        self.pub_imu2_mag = rospy.Publisher('/BlueRov2/imu/mag2', MagneticField, queue_size=10)
         self.pub_imu = rospy.Publisher('/imu/data_raw', Imu, queue_size=10)
         self.pub_mag = rospy.Publisher('/imu/mag', MagneticField, queue_size=10)
 
+        #Calibration file in ./calibration/
         with open('calibration/calibrationIMU1.json') as f:
             calibrationFileIMU1 = json.load(f)
             self.IMU1_offsetVector = np.array([[calibrationFileIMU1["acc_off_x"]],
@@ -89,9 +94,9 @@ class Imu_bridge:
                                               [calibrationFileIMU2["magn_scale_x"]],
                                               [calibrationFileIMU2["magn_scale_y"]],
                                               [calibrationFileIMU2["magn_scale_z"]]])
-        self.IMU1_data_flt = np.zeros((9,1))
+        self.IMU1_data_flt = np.zeros((9,1)) #for filtered (flt) value
         self.IMU2_data_flt = np.zeros((9,1))
-        self.w1 = np.array([[0.3], 
+        self.w1 = np.array([[0.3], # coefficient of the IIR low pass filter for IMU 1
                             [0.3],
                             [0.3],
                             [0.3],
@@ -100,7 +105,7 @@ class Imu_bridge:
                             [0.3],
                             [0.3],
                             [0.3]])
-        self.w2 = np.array([[0.3], 
+        self.w2 = np.array([[0.3], #the same for IMU2
                             [0.3],
                             [0.3],
                             [0.3],
@@ -109,7 +114,7 @@ class Imu_bridge:
                             [0.3],
                             [0.3],
                             [0.3]])
-        self.bound1 = np.array([[0.1], 
+        self.bound1 = np.array([[0.1], #to bound the value to try to get 0 when ROV motionless : not working in the lake
                                 [0.1],
                                 [0.1],
                                 [0],
@@ -118,7 +123,7 @@ class Imu_bridge:
                                 [0],
                                 [0],
                                 [0]])
-        self.bound2 = np.array([[0.1], 
+        self.bound2 = np.array([[0.1], #same for IMU 2
                                 [0.1],
                                 [0.1],
                                 [0],
@@ -127,35 +132,7 @@ class Imu_bridge:
                                 [0],
                                 [0],
                                 [0]])
-        self.scaleEnd = np.array([[1.1], 
-                                  [1.1],
-                                  [1.1],
-                                  [0],
-                                  [0],
-                                  [0],
-                                  [0],
-                                  [0],
-                                  [0]])
-
-        self.IMU1_accX = 0        
-        self.IMU1_accY = 0
-        self.IMU1_accZ = 0
-        self.IMU2_accX = 0
-        self.IMU2_accY = 0
-        self.IMU2_accZ = 0
-
-    #connection to the serveur
-    def connection(self):
-        try:
-            self.socket.connect((self.host, self.port))
-        except ConnectionRefusedError:
-            print("Server not started")
-        except:
-            print("CONNECTION FAILED")
-
-    def send(self, data):
-        data = data.encode("utf8")
-        self.socket.send(data)
+       
 
         self.IMU1_accX = 0        
         self.IMU1_accY = 0
@@ -170,8 +147,8 @@ class Imu_bridge:
             print("Connecting ...")
             self.socket.connect((self.host, self.port))
             print("CONNECTED to BlueRov2")
-        except ConnectionRefusedError: #only in python3 but ROS still use python2 in august 2019
-            print("Server not started")
+#        except ConnectionRefusedError: #only in python3 but ROS still use python2 in august 2019
+#            print("Server not started")
         except:
             print("CONNECTION FAILED")
 
@@ -185,18 +162,21 @@ class Imu_bridge:
         return json.loads(s_data)      
 
     def publish(self):
+        """Publish average of the 2 IMUs
+        You can publish each imu if you uncommant the ligne for plublishing them : 4 lines in __init__, 4 in publish
+        """
         msg_imu1, msg_mag1, msg_imu2, msg_mag2, msg_imu, msg_mag= self._create_msg()
         self.pub_imu.publish(msg_imu)
         self.pub_mag.publish(msg_mag)
         #------Uncomment to publish IMUs data separately------
-        self.pub_imu1.publish(msg_imu1)
-        self.pub_imu2.publish(msg_imu2)
-        self.pub_imu1_mag.publish(msg_mag1)
-        self.pub_imu2_mag.publish(msg_mag2)
+#        self.pub_imu1.publish(msg_imu1)
+#        self.pub_imu2.publish(msg_imu2)
+#        self.pub_imu1_mag.publish(msg_mag1)
+#        self.pub_imu2_mag.publish(msg_mag2)
 
     def _create_msg(self):
         """
-        Messages published with ROS have axis from the robot frame : x forward, y ?, z up or down
+        Messages published with ROS have axis from the robot frame : x forward, y left, z up 
         """
     #----IMU 1----
         msg1 = Imu()
@@ -289,37 +269,38 @@ class Imu_bridge:
         return msg1, msg1_magfield, msg2, msg2_magfield, msgA, msgA_magfield 
     
     def process_data(self, data):
+        """Process IMU data : calibration and IIR lowpass filter
+        """
         IMU1_data = np.array([[-data["IMU1"]["accel_y"]],
-                              [-data["IMU1"]["accel_z"]],
+                              [ data["IMU1"]["accel_z"]],
                               [ data["IMU1"]["accel_x"]], 
                               [-data["IMU1"]["gyro_y"]],
-                              [-data["IMU1"]["gyro_z"]],
+                              [ data["IMU1"]["gyro_z"]],
                               [ data["IMU1"]["gyro_x"]],
-                              [-data["IMU1"]["mag_y"]*1e3], # *1e3 because of the values for calibration from the software FreeImu modified to work with ROS => https://github.com/nathanfourniol/FreeIMU-gui-ROS 
-                              [-data["IMU1"]["mag_z"]*1e3],
-                              [ data["IMU1"]["mag_x"]*1e3]])
+                              [-data["IMU1"]["mag_y"]], 
+                              [-data["IMU1"]["mag_z"]],
+                              [ data["IMU1"]["mag_x"]]])
         IMU2_data = np.array([[data["IMU2"]["accel_y"]],
-                              [data["IMU2"]["accel_z"]],
+                              [-data["IMU2"]["accel_z"]],
                               [data["IMU2"]["accel_x"]],
                               [data["IMU2"]["gyro_y"]],
-                              [data["IMU2"]["gyro_z"]],
+                              [-data["IMU2"]["gyro_z"]],
                               [data["IMU2"]["gyro_x"]],
-                              [data["IMU2"]["mag_y"]*1e3],
-                              [data["IMU2"]["mag_z"]*1e3],
-                              [data["IMU2"]["mag_x"]*1e3]])
-        IMU1_data_cor = self.IMU1_scaleVector*(IMU1_data-self.IMU1_offsetVector)
-        IMU2_data_cor = self.IMU2_scaleVector*(IMU2_data-self.IMU2_offsetVector)
-        self.IMU1_data_flt = self.w1*IMU1_data_cor + (1-self.w1)*self.IMU1_data_flt
-        self.IMU2_data_flt = self.w2*IMU2_data_cor + (1-self.w2)*self.IMU2_data_flt
+                              [data["IMU2"]["mag_y"]],
+                              [data["IMU2"]["mag_z"]],
+                              [data["IMU2"]["mag_x"]]])
+        IMU1_data_cor = self.IMU1_scaleVector*(IMU1_data-self.IMU1_offsetVector) #Calibration IMU1
+        IMU2_data_cor = self.IMU2_scaleVector*(IMU2_data-self.IMU2_offsetVector) #Calibration IMU2
+        self.IMU1_data_flt = self.w1*IMU1_data_cor + (1-self.w1)*self.IMU1_data_flt #IIR lowpass filter IMU1
+        self.IMU2_data_flt = self.w2*IMU2_data_cor + (1-self.w2)*self.IMU2_data_flt #IIR lowpass filter IMU2
         
-        for i in range(len(self.IMU1_data_flt)):
-            if self.bound1[i]>self.IMU1_data_flt[i] and self.IMU1_data_flt[i]>-self.bound1[i]:
-                self.IMU1_data_flt[i] = 0
-            if self.bound2[i]>self.IMU2_data_flt[i] and self.IMU2_data_flt[i]>-self.bound2[i]:
-                self.IMU2_data_flt[i] = 0
+        #To bound the acceleration to try to get 0 when ROV motionless, not working in lake
+#        for i in range(len(self.IMU1_data_flt)):
+#            if self.bound1[i]>self.IMU1_data_flt[i] and self.IMU1_data_flt[i]>-self.bound1[i]:
+#                self.IMU1_data_flt[i] = 0
+#            if self.bound2[i]>self.IMU2_data_flt[i] and self.IMU2_data_flt[i]>-self.bound2[i]:
+#                self.IMU2_data_flt[i] = 0
             
-        self.IMU1_data_flt = self.IMU1_data_flt*self.scaleEnd
-        self.IMU2_data_flt = self.IMU2_data_flt*self.scaleEnd
 
     def main(self):
         while True:

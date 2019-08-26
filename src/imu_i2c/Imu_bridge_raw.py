@@ -88,7 +88,7 @@ class Imu_bridge_raw:
         msg1_magfield_raw.header.frame_id = '/base_link'
 
         msg1_raw.linear_acceleration.x = -data["IMU1"]["accel_y"]
-        msg1_raw.linear_acceleration.y = -data["IMU1"]["accel_z"]
+        msg1_raw.linear_acceleration.y = data["IMU1"]["accel_z"]
         msg1_raw.linear_acceleration.z =  data["IMU1"]["accel_x"]
         msg1_raw.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -104,7 +104,7 @@ class Imu_bridge_raw:
         msg1_raw.orientation_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         msg1_magfield_raw.magnetic_field.x = -data["IMU1"]["mag_y"]  
-        msg1_magfield_raw.magnetic_field.y = -data["IMU1"]["mag_z"]
+        msg1_magfield_raw.magnetic_field.y = data["IMU1"]["mag_z"]
         msg1_magfield_raw.magnetic_field.z =  data["IMU1"]["mag_x"]
         
         
@@ -118,12 +118,12 @@ class Imu_bridge_raw:
         msg2_magfield_raw.header.frame_id = '/base_link'
 
         msg2_raw.linear_acceleration.x = data["IMU2"]["accel_y"]
-        msg2_raw.linear_acceleration.y = data["IMU2"]["accel_z"]
+        msg2_raw.linear_acceleration.y = -data["IMU2"]["accel_z"]
         msg2_raw.linear_acceleration.z = data["IMU2"]["accel_x"]
         msg2_raw.linear_acceleration_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         msg2_raw.angular_velocity.x = data["IMU2"]["gyro_y"]
-        msg2_raw.angular_velocity.y = data["IMU2"]["gyro_z"]
+        msg2_raw.angular_velocity.y = -data["IMU2"]["gyro_z"]
         msg2_raw.angular_velocity.z = data["IMU2"]["gyro_x"]
         msg2_raw.angular_velocity_covariance = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
