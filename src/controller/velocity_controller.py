@@ -113,7 +113,7 @@ class Velocity_Control():
         
         """
         #u = self.KP*(self.velocity_desired-self.speedX) - self.KD*self.accX[1]
-        u = self.pwm_max-50
+        u = self.velocity_desired #self.pwm_max-50
         print(u)
 
         return u
