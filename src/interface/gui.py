@@ -16,43 +16,71 @@ rho = 1000 # kg.m^3  water density
 PI = 3.1415
 
 class Display(QtWidgets.QMainWindow):
-
+    """Manage the gui
+    Listen topics to display information
+    Publish parameters for controllers and target regularly in the display method
+    """
     def _depth_param_clicked(self):
+        """Raised when button SEND is clicked from depth PID parameters
+        Define depth PID coefficients for message Set_depth
+        """
         self.depth_ctrl_msgToSend.KI = self.spinBox_KI_depth.value()
         self.depth_ctrl_msgToSend.KP = self.spinBox_KP_depth.value()
         self.depth_ctrl_msgToSend.KD = self.spinBox_KD_depth.value()
 
     def _heading_param_clicked(self):
+        """Raised when button SEND is clicked from heading PID parameters
+        Define heading PID coefficients for message Set_heading
+        """
         #self.heading_ctrl_msgToSend.KI = self.spinBox_KI_heading.value()
         self.heading_ctrl_msgToSend.KP = self.spinBox_KP_heading.value()
         self.heading_ctrl_msgToSend.KD = self.spinBox_KD_heading.value()
 
     def _velocity_param_clicked(self):
+        """Raised when button SEND is clicked from velocity PID parameters
+        Define heading PID coefficients for message Set_velocity
+        """
         #self.velocity_ctrl_msgToSend.KI = self.spinBox_KI_velocity.value()
         self.velocity_ctrl_msgToSend.KP = self.spinBox_KP_velocity.value()
         self.velocity_ctrl_msgToSend.KD = self.spinBox_KD_velocity.value()
 
     def _target_param_clicked(self):
+        """Raised when button SEND is clicked from Set target
+        Define the depth to reach, the heading to follow, the velocity (constant pwm)
+        """
         self.target_ctrl_msgToSend.depth_desired = - self.doubleSpinBox_depth.value()#because in depht_controller, depth desired = altitude ( so -XX to go under the surface)
         self.target_ctrl_msgToSend.heading_desired = self.doubleSpinBox_heading.value()
         self.target_ctrl_msgToSend.velocity_desired = self.doubleSpinBox_velocity.value()
 
     def _pwm_max_clicked(self):
+        """Raised when button SEND is clicked from PWM MAX
+        Define the max pwm for all controller for their saturation method
+        """
         self.depth_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value() 
         self.heading_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value()
         self.velocity_ctrl_msgToSend.pwm_max = self.spinBox_pwm_max.value()
 
     def _activate_depth_ctrl_checked(self):
+        """Raised when checkBox is checked from depth in Enable controller
+        Enable depth control to control thruster for altitude
+        """
         self.depth_ctrl_msgToSend.enable_depth_ctrl = self.checkBox_activate_depth_controller.isChecked()
 
     def _activate_headind_ctrl_checked(self):
+        """Raised when checkBox is checked from heading in Enable controller
+        Enable heading_controller to control thrusters for yaw orientation
+        """
         self.heading_ctrl_msgToSend.enable_heading_ctrl = self.checkBox_activate_heading_controller.isChecked()
 
     def _activate_velocity_ctrl_checked(self):
+        """Raised when checkBox is checked from velocity in Enable controller
+        Enable velocity_controller to control thrusters for forward/backward
+        """
         self.velocity_ctrl_msgToSend.enable_velocity_ctrl = self.checkBox_activate_velocity_controller.isChecked()
 
     def _enable_automatic_control_checked(self):
-        """"Publish a Joy neutral message to enable automatic mode without gamepad
+        """Raised when checkBox is checked in enable AUTOMATIC controller
+        Publish a Joy neutral message to enable automatic mode without gamepad
         axis : [THROTTLE, YAW, FORWARD, LATERAL] => pwm = 1500 for neutral
         buttons : [ARM, OVERRIDE_CONTROLLER, PWM_CAM, LIGHT_DEC, LIGHT_INC, GAIN_LIGHT] => \
                 [ 0(disarm), 0(automatic control)|| 1(manual mode), 1500(pwm neutral), 0,0,0]
@@ -67,10 +95,16 @@ class Display(QtWidgets.QMainWindow):
         self.pub_automatic_control.publish(msg)
 
     def _enable_publish_target(self):
-        """Forbid gui to publish target in order to use with an other script for setting target"""
+        """Forbid gui to publish target in order to use an other script for setting target
+        Return a Bool based on the state of the checkBox.
+        Return True (checkbox not checked), False (checkbox checked)
+        """
         return (not self.checkBox_forbid_publish_target.isChecked()) #false if checked/true otherwise
         
     def _record_depth_clicked(self):
+        """Raised by button START from depth in recording section
+        Launch a thread to record topics define in topicstorecord list
+        """
         recordtime = self.spinBox_depth_record_time.value()
         topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_target", "/Command/depth"]
         filename = 'depth' #without .bag
@@ -78,6 +112,9 @@ class Display(QtWidgets.QMainWindow):
         record.start()
 
     def _record_heading_clicked(self):
+        """Raised by button START from heading in recording section
+        Launch a thread to record topics define in topicstorecord list
+        """
         recordtime = self.spinBox_heading_record_time.value()
         topicstorecord = ["/BlueRov2/imu/attitude", "/BlueRov2/state", "/Settings/set_heading", "/Settings/set_target","/Command/heading" ]
         filename = 'heading' #without .bag
@@ -85,6 +122,9 @@ class Display(QtWidgets.QMainWindow):
         record.start()
 
     def _record_velocity_clicked(self):
+        """Raised by button START from heading in recording section
+        Launch a thread to record topics define in topicstorecord list
+        """
         recordtime = self.spinBox_velocity_record_time.value()
         topicstorecord = ["/imu/data_raw", "/BlueRov2/state", "/Settings/set_velocity", "/Settings/set_target", "/Command/velocity"]
         filename = 'velocity' #without .bag
@@ -92,6 +132,9 @@ class Display(QtWidgets.QMainWindow):
         record.start()
  
     def _record_all_clicked(self):
+        """Raised by button START ALL in recording section
+        Launch a thread to record topics define in topicstorecord list
+        """
         recordtime = max(self.spinBox_depth_record_time.value(), self.spinBox_heading_record_time.value(), self.spinBox_velocity_record_time.value())
         topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/imu/attitude", "/imu/data_raw", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_heading",  "/Settings/set_velocity", "/Settings/set_target", "/Command/depth", "/Command/velocity", "/Command/heading"]
         filename = 'allparams' #without .bag
@@ -171,6 +214,7 @@ class Display(QtWidgets.QMainWindow):
         self.init_ros()
 
     def init_ros(self):
+        """Raised some functions to initialise the controllers"""
         self._depth_param_clicked()
         self._heading_param_clicked()
         self._velocity_param_clicked()
@@ -235,8 +279,11 @@ class Display(QtWidgets.QMainWindow):
             return 360 - (-rad * 180) / PI
         
     def display(self):
+        """Raised every 100ms (timer in __init__) to actualize the view.
+        Publish Set_target, Set_depth, Set_heading, Set_velocity on the topics
+        """
         #STATUS section :
-        if self.state.arm: 
+        if self.state.arm:  
             self.arm_disarm_display.setText('ARM')
         else:
             self.arm_disarm_display.setText('DISARM')
@@ -249,7 +296,6 @@ class Display(QtWidgets.QMainWindow):
         self.battery_level_display.display(self.battery)
         self.light_level_display.display(self.state.light)
         self.camera_tilt_display.display(self.state.camera)
-	#self.light_level_display 
         
             #CONTROLLER OVERVIEW :
         depth = -(self.bar30_pressure_measured*100-p0)/(rho*g) #pressure measured in hPa => *100 to have Pa

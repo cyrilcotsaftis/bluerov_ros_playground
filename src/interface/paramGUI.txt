@@ -4,6 +4,7 @@ Text browser :
 	automatic_manual_ctrl_display
 	battery_level_display
 	light_level_display 
+    camera_tilt_display
 	
 	CONTROLLER OVERVIEW :
 	depth_measured_display
@@ -36,23 +37,34 @@ doubleSpinBox :
 
 spinBox :
 	SET PARAMETERS :
-	spinBox_KI_depth
+	spinBox_KI_depth 
 	spinBox_KP_depth
 	spinBox_KD_depth
 
-	spinBox_KI_heading
+	spinBox_KI_heading #not defined
 	spinBox_KP_heading
 	spinBox_KD_heading
 
-	spinBox_KI_velocity
+	spinBox_KI_velocity #not defined
 	spinBox__KP_velocity
 	spinBox_KD_velocity
+
+    RECORD DATA :
+    spinBox_depth_record_time
+    spinBox_heading_record_time
+    spinBox_velocity_record_time
 
 checkBox :
 	CONTROLLER OVERVIEW :
 	checkBox_activate_depth_controller
 	checkBox_activate_heading_controller
 	checkBox_activate_velocity_controller
+
+    STATUS :
+    checkBox_enable_automatic_control
+
+    SET PARAMETERS :
+    checkBox_forbid_publish_target
 
 pushButton :
 	SET PARAMETERS :
@@ -61,3 +73,9 @@ pushButton :
 	pushButton_send_parameters_velocity
 	pushButton_send_parameters_target
 	pushButton_send_pwm_max 
+
+    RECORD DATA :
+    pushButton_record_depth
+    pushButton_record_heading
+    pushButton_record_velocity
+    pushButton_record_all
