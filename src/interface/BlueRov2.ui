@@ -36,7 +36,13 @@
      <item row="1" column="7">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_velocity">
        <property name="minimum">
-        <double>-99.989999999999995</double>
+        <double>-400.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>400.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>50.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -1170,6 +1176,19 @@
     </property>
     <property name="text">
      <string>enable AUTOMATIC control</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_forbid_publish_target">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>190</y>
+      <width>241</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>don't publish target with gui</string>
     </property>
    </widget>
   </widget>

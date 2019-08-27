@@ -66,6 +66,10 @@ class Display(QtWidgets.QMainWindow):
         msg.buttons = [0, enable_automatic_mode, 1500, 0, 0, 0]
         self.pub_automatic_control.publish(msg)
 
+    def _enable_publish_target(self):
+        """Forbid gui to publish target in order to use with an other script for setting target"""
+        return (not self.checkBox_forbid_publish_target.isChecked()) #false if checked/true otherwise
+        
     def _record_depth_clicked(self):
         recordtime = self.spinBox_depth_record_time.value()
         topicstorecord = ["/BlueRov2/bar30", "/BlueRov2/state", "/Settings/set_depth", "/Settings/set_target", "/Command/depth"]
@@ -99,7 +103,7 @@ class Display(QtWidgets.QMainWindow):
         
         uic.loadUi(PATH + "BlueRov2.ui", self)
         
-        self.pub_set_heading = rospy.Publisher('/Settings/set_heading', Set_heading, queue_size = 10)
+        self.pub_set_heading = rospy.Publisher('/Settings/set_heading', Set_heading, queue_size=10)
         self.pub_set_depth = rospy.Publisher('/Settings/set_depth', Set_depth, queue_size=10)
         self.pub_set_velocity = rospy.Publisher('/Settings/set_velocity', Set_velocity, queue_size=10)
         self.pub_set_target = rospy.Publisher('/Settings/set_target', Set_target, queue_size=10)
@@ -133,7 +137,7 @@ class Display(QtWidgets.QMainWindow):
         self.checkBox_activate_heading_controller.clicked.connect(self._activate_headind_ctrl_checked)
         self.checkBox_activate_velocity_controller.clicked.connect(self._activate_velocity_ctrl_checked)
         self.checkBox_enable_automatic_control.clicked.connect(self._enable_automatic_control_checked)
-
+        #self.checkBox_forbid_publish_target.clicked.connect(self._forbid_publish_target)
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.display)
@@ -272,8 +276,9 @@ class Display(QtWidgets.QMainWindow):
         
         self.pub_set_velocity.publish(self.velocity_ctrl_msgToSend)
         self.pub_set_heading.publish(self.heading_ctrl_msgToSend)
-        self.pub_set_target.publish(self.target_ctrl_msgToSend)
         self.pub_set_depth.publish(self.depth_ctrl_msgToSend)
+        if self._enable_publish_target():
+            self.pub_set_target.publish(self.target_ctrl_msgToSend)
 
 if __name__ == "__main__":
     rospy.init_node('GUI', anonymous =True)
