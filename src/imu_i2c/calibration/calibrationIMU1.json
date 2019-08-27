@@ -15,7 +15,7 @@
 "gyr_scale_y" : 1,  
 "gyr_scale_z" : 1,
 
-"magn_unit": "",
+"magn_unit": "gauss",
 "magn_off_x" : -0.672,
 "magn_off_y" : -0.241,
 "magn_off_z" : -0.514,

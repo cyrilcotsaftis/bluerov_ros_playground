@@ -8,6 +8,8 @@ import json
 from sensor_msgs.msg import Imu
 from sensor_msgs.msg import MagneticField
 import numpy as np
+import os
+import inspect
 """
 Data received :
 Axes are those defined by the physical sensor on the robot
@@ -35,6 +37,10 @@ IMU2:{"time": t,
 "temperature": temp}}
 """
 
+FOLDERPATH = os.path.split(inspect.getfile(inspect.currentframe()))[0]
+
+
+
 class Imu_bridge:
     """Class Imu_bridge : Client to the imu server on Raspberry Pi. Collect data from Imus, calibrate and filter them befor publishing them on th etopic /imu/data_raw
     
@@ -54,7 +60,7 @@ class Imu_bridge:
         self.pub_mag = rospy.Publisher('/imu/mag', MagneticField, queue_size=10)
 
         #Calibration file in ./calibration/
-        with open('calibration/calibrationIMU1.json') as f:
+        with open('{}/calibration/calibrationIMU1.json'.format(FOLDERPATH)) as f:
             calibrationFileIMU1 = json.load(f)
             self.IMU1_offsetVector = np.array([[calibrationFileIMU1["acc_off_x"]],
                                                [calibrationFileIMU1["acc_off_y"]],
@@ -74,7 +80,7 @@ class Imu_bridge:
                                               [calibrationFileIMU1["magn_scale_x"]],
                                               [calibrationFileIMU1["magn_scale_y"]],
                                               [calibrationFileIMU1["magn_scale_z"]]])
-        with open('calibration/calibrationIMU2.json') as f:
+        with open('{}/calibration/calibrationIMU2.json'.format(FOLDERPATH)) as f:
             calibrationFileIMU2 = json.load(f)
             self.IMU2_offsetVector = np.array([[calibrationFileIMU2["acc_off_x"]],
                                                [calibrationFileIMU2["acc_off_y"]],

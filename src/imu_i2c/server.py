@@ -26,7 +26,10 @@ data_imu1 = {}
 data_imu2 = {} 
 
 class ClientThread(threading.Thread):
+    """Thread to communicate with the Imu_bridge.py on the topside computer
 
+    When the client sends a "?", the thread sends back the IMU data dictionnary
+    """
     def __init__(self, conn, address):
         threading.Thread.__init__(self)
         self.conn = conn
@@ -46,58 +49,64 @@ class ClientThread(threading.Thread):
                 self.send(str_to_send)
 
     def send(self,data):
+        """Encode data with utf8 standart and send them to the client."""
         data = data.encode("utf8")
         self.conn.send(data)
 
 def build_data():
+    """Build daa structure to send"""
     LOCK.acquire()
     data = {"IMU1": data_imu1, "IMU2": data_imu2}
     LOCK.release()
     return json.dumps(data)
 
 def get_data():
-        while True:
-            global data_imu1, data_imu2
-            LOCK.acquire()
-            t = time.time()  
-            accel_x, accel_y, accel_z = imu1.acceleration
-            mag_x, mag_y, mag_z = imu1.magnetic
-            gyro_x, gyro_y, gyro_z = imu1.gyro
-            temp = imu1.temperature
-            data_imu1 = {
-                    "time": t,
-                    "accel_x": accel_x,
-                    "accel_y": accel_y,
-                    "accel_z": accel_z,
-                    "mag_x": mag_x,
-                    "mag_y": mag_y,
-                    "mag_z": mag_z,
-                    "gyro_x": gyro_x,
-                    "gyro_y": gyro_y,
-                    "gyro_z": gyro_z,
-                    "temperature": temp
-                    }
+    """Read data from IMU
+    IMU1 is the one without SDOM, SDAG connected to ground
+    IMU2 is the one with SDOM, SDAG, connected to ground
+    """
+    while True:
+        global data_imu1, data_imu2
+        LOCK.acquire()
+        t = time.time()  
+        accel_x, accel_y, accel_z = imu1.acceleration
+        mag_x, mag_y, mag_z = imu1.magnetic
+        gyro_x, gyro_y, gyro_z = imu1.gyro
+        temp = imu1.temperature
+        data_imu1 = {
+                "time": t,
+                "accel_x": accel_x,
+                "accel_y": accel_y,
+                "accel_z": accel_z,
+                "mag_x": mag_x,
+                "mag_y": mag_y,
+                "mag_z": mag_z,
+                "gyro_x": gyro_x,
+                "gyro_y": gyro_y,
+                "gyro_z": gyro_z,
+                "temperature": temp
+                }
 
-            t = time.time()  
-            accel_x, accel_y, accel_z = imu2.acceleration
-            mag_x, mag_y, mag_z = imu2.magnetic
-            gyro_x, gyro_y, gyro_z = imu2.gyro
-            temp = imu2.temperature
-            data_imu2 = {
-                    "time": t,
-                    "accel_x": accel_x,
-                    "accel_y": accel_y,
-                    "accel_z": accel_z,
-                    "mag_x": mag_x,
-                    "mag_y": mag_y,
-                    "mag_z": mag_z,
-                    "gyro_x": gyro_x,
-                    "gyro_y": gyro_y,
-                    "gyro_z": gyro_z,
-                    "temperature": temp
-                    }
-            LOCK.release()
-            time.sleep(0.01)
+        t = time.time()  
+        accel_x, accel_y, accel_z = imu2.acceleration
+        mag_x, mag_y, mag_z = imu2.magnetic
+        gyro_x, gyro_y, gyro_z = imu2.gyro
+        temp = imu2.temperature
+        data_imu2 = {
+                "time": t,
+                "accel_x": accel_x,
+                "accel_y": accel_y,
+                "accel_z": accel_z,
+                "mag_x": mag_x,
+                "mag_y": mag_y,
+                "mag_z": mag_z,
+                "gyro_x": gyro_x,
+                "gyro_y": gyro_y,
+                "gyro_z": gyro_z,
+                "temperature": temp
+                }
+        LOCK.release()
+        time.sleep(0.01)
 
 
 get_data_thread = threading.Thread(target=get_data)
