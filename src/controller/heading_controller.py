@@ -111,7 +111,7 @@ class Heading_Controller():
         """
         self.heading_desired = self.deg2rad(msg.heading_desired)
 
-    def deg2rad(deg):
+    def deg2rad(self,deg):
         """Convert [0-360]deg to [-pi,pi]rad => [180,360]deg ~ [-pi,0]rad  ,  [0,180]deg ~ [0,pi]rad
        
         Input:
