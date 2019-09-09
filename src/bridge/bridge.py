@@ -232,7 +232,7 @@ class Bridge(object):
             id (TYPE): Channel id
             pwm (int, optional): Channel pwm value 1100-2000
         """
-        rc_channel_values = [65535 for _ in range(10)]
+        rc_channel_values = [65535 for _ in range(8)] #8 for mavlink1
         rc_channel_values[id] = pwm
         #http://mavlink.org/messages/common#RC_CHANNELS_OVERRIDE
         self.conn.mav.rc_channels_override_send(
