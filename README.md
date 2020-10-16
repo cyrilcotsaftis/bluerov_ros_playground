@@ -2,6 +2,8 @@
 
 github original : (https://github.com/patrickelectric/bluerov_ros_playground)
 
+See more documentation : https://acolor-bluerov2.gitbook.io/acolor-bluerov2/
+
 Scripts to help BlueRov integration with ROS.
 What is possible ?
 - Video streaming capture with opencv
